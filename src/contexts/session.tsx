@@ -35,14 +35,14 @@ export function SessionProvider({ children }: SessionProvider) {
 
   // Recupera o token do navegador.
   const webToken = useCallback(async () => {
-    const response = await fetch("/api/web-token");
+    const response = await fetch("/api/auth/web-token");
     const responseJson = (await response.json()) as { session_token?: string };
 
     if (responseJson && responseJson.session_token) {
-      nookies.destroy(null, "_sort_app.webtoken", {
+      nookies.destroy(null, "_s3_minio_app.webtoken", {
         path: "/",
       });
-      nookies.set(null, "_sort_app.webtoken", responseJson.session_token, {
+      nookies.set(null, "_s3_minio_app.webtoken", responseJson.session_token, {
         maxAge: 60 * 60 * 60,
         path: "/",
       });
