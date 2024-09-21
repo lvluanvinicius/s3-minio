@@ -3,30 +3,18 @@ import { minioClient } from "@/libs/minio";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const bucketName = process.env.S3_APP_BUCKET as string;
-const bucketUrl = 'https://prv-s3.grupocednet.com.br'// process.env.S3_APP_URL_BUCKET as string;
+const bucketUrl = process.env.S3_APP_SERVER_URL as string;
 
 const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   try {
-    const stream = minioClient.listObjectsV2(bucketName, "", true);
-    const files: FileObject[] = [];
+    const stream = minioClient.listBuckets();
 
-    for await (const obj of stream) {
-      files.push({
-        name: obj.name,
-        size: obj.size,
-        lastModified: obj.lastModified,
-        etag: obj.etag,
-        preview: `${bucketUrl}/${bucketName}/${obj.name}`,
-      });
-    }
+    // for await (const obj of stream) {
+    //   console.log(obj);
+    // }
 
     return res.status(200).json({
-      status: true,
-      message: "Arquivos recuperados com sucesso.",
-      data: {
-        path_bucket: bucketName,
-        files,
-      },
+      stream: await stream,
     });
   } catch (error) {
     if (error instanceof Error) {
