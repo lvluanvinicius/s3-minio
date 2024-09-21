@@ -3,7 +3,7 @@ import { minioClient } from "@/libs/minio";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const bucketName = process.env.S3_APP_BUCKET as string;
-const bucketUrl = process.env.S3_APP_URL_BUCKET as string;
+const bucketUrl = 'https://prv-s3.grupocednet.com.br'// process.env.S3_APP_URL_BUCKET as string;
 
 const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   try {

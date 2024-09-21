@@ -1,6 +1,7 @@
 import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { errorInvalidContentBody } from "@/exceptions/invalid_content_body";
 import { prisma } from "@/libs/prisma";
+import { getCurrentTimeInZone } from "@/utils/formatter";
 import { hashMake } from "@/utils/hash";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,19 +10,14 @@ interface DataRequest {
   password: string | undefined;
   email: string | undefined;
   name: string | undefined;
+  updated_at: string | undefined;
 }
 
-const handler = async function (req: NextApiRequest, res: NextApiResponse) {
+export async function update(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Validando metodo.
-    if (req.method !== "POST") {
-      throw new Error("Method is not allowed.", {
-        cause: "METHOD_NOT_ALLOWED",
-      });
-    }
-
     // Recuperando dados.
     const { email, name, password, username } = req.body;
+    const { user_id } = req.query;
 
     //
     const data: DataRequest = {
@@ -32,61 +28,53 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
     } as DataRequest;
 
     // Efetua a validação dos parametros do body.
-    errorInvalidContentBody(data, [
+    errorInvalidContentBody({ ...data, user_id }, [
+      "user_id|Parametro user_id não informado para atualização.",
       "username|Usuário não foi informado corretamente.",
-      "password|Senha não foi informado corretamente.",
       "name|Nome não foi informado corretamente.",
       "email|E-mail não foi informado corretamente.",
     ]);
 
-    // Recuperando usuário se existir.
-    const findUnique = await prisma.user.findFirst({
+    // Validando usuário.
+    const userExists = await prisma.user.count({
       where: {
-        OR: [
-          {
-            email,
-          },
-          {
-            username,
-          },
-        ],
+        id: user_id as string,
       },
     });
 
-    // Validando dados unicos.
-    if (findUnique) {
-      if (findUnique.email === email) {
-        throw new Error("E-mail já está sendo utilizado.", {
-          cause: "DATA_DUPLICATED",
-        });
-      }
-
-      if (findUnique.username === username) {
-        throw new Error("Usuário já está sendo utilizado.", {
-          cause: "DATA_DUPLICATED",
-        });
-      }
+    if (userExists <= 0) {
+      throw new Error("Usuário informado não encontrado.");
     }
 
-    // Convertendo password para bcrypt.
-    const hashPassword = await hashMake(req.body.password);
+    if (data.password) {
+      // Convertendo password para bcrypt.
+      data.password = await hashMake(req.body.password);
+    }
 
-    // Criar usuário.
-    const user = await prisma.user.create({
-      data: {
-        password: hashPassword,
-        username,
-        name,
-        email,
+    // Recupera a data de atualização.
+    data.updated_at = getCurrentTimeInZone("date") as string;
+
+    // Atualizando registro.
+    const user = await prisma.user.update({
+      where: {
+        id: user_id as string,
+      },
+      data,
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        updated_at: true,
+        created_at: true,
       },
     });
 
     return res.status(200).json({
       status: true,
-      message: "Conta criada com sucesso.",
+      message: "Usuários atualizado com sucesso.",
       data: user,
     });
-
   } catch (error) {
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
@@ -100,6 +88,4 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   } finally {
     await prisma.$disconnect();
   }
-};
-
-export default handler;
+}

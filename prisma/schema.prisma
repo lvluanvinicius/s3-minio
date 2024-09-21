@@ -37,5 +37,8 @@ model Session {
   expires      Int
   User         User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
   @@map("sessions")
 }

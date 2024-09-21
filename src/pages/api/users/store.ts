@@ -11,15 +11,8 @@ interface DataRequest {
   name: string | undefined;
 }
 
-const handler = async function (req: NextApiRequest, res: NextApiResponse) {
+export async function store(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Validando metodo.
-    if (req.method !== "POST") {
-      throw new Error("Method is not allowed.", {
-        cause: "METHOD_NOT_ALLOWED",
-      });
-    }
-
     // Recuperando dados.
     const { email, name, password, username } = req.body;
 
@@ -79,14 +72,21 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
         name,
         email,
       },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        updated_at: true,
+        created_at: true,
+      },
     });
 
     return res.status(200).json({
       status: true,
-      message: "Conta criada com sucesso.",
+      message: "Usuários criado com sucesso.",
       data: user,
     });
-
   } catch (error) {
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
@@ -100,6 +100,4 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   } finally {
     await prisma.$disconnect();
   }
-};
-
-export default handler;
+}
