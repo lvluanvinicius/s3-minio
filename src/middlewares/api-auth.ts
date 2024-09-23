@@ -71,8 +71,8 @@ export function apiAuth(handler: NextApiHandler) {
         return handler(req, res);
       }
 
-      // Recuperando token de navegador. _sort_app.webtoken
-      const token = getCookieValueFromRequest(req, "_sort_app.webtoken");
+      // Recuperando token de navegador. _s3_minio_app.webtoken
+      const token = getCookieValueFromRequest(req, "_s3_minio_app.webtoken");
 
       // Validando se o token existe na requisição.
       if (!token) {

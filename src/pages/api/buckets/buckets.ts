@@ -2,28 +2,30 @@ import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { prisma } from "@/libs/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export async function users(req: NextApiRequest, res: NextApiResponse) {
+export async function buckets(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { page, paginate } = req.query;
 
     const perPage = parseInt(paginate as string) || 10;
     const setPage = parseInt(page as string) || 1;
 
-    const users = await prisma.user.findMany({
+    // Recuperando as buckets.
+    const buckets = await prisma.buckets.findMany({
       skip: (setPage - 1) * perPage,
       take: perPage,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        username: true,
-        created_at: true,
-        updated_at: true,
+      where: {
+        user_id: req.user_id,
       },
     });
 
-    const total = await prisma.user.count();
+    // Efetua a contagem de todos os buckets do usuário.
+    const total = await prisma.buckets.count({
+      where: {
+        user_id: req.user_id,
+      },
+    });
 
+    // Recupera o total de páginas.
     const pages = Math.ceil(total / perPage);
 
     return res.status(200).json({
@@ -33,9 +35,9 @@ export async function users(req: NextApiRequest, res: NextApiResponse) {
         per_page: perPage,
         pages,
         total,
-        total_page: users.length,
+        total_page: buckets.length,
         current_page: setPage,
-        data: users,
+        data: buckets,
       },
     });
   } catch (error) {

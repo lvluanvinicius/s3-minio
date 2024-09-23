@@ -14,31 +14,71 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
-  name     String
-  email    String @unique
-  username String @unique
-  password String
-
+  id         String    @id @default(cuid())
+  name       String
+  email      String    @unique
+  username   String    @unique
+  password   String
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
   Session    Session[]
+  Files      Files[]
+  Folders    Folders[]
 
   @@map("users")
 }
 
 model Session {
-  id           String  @id @default(cuid())
-  sessionToken String  @unique @map("session_token")
-  userId       String? @map("user_id")
-  access_token String? @db.Text
-  remote_ip    String? @db.Text
-  user_agent   String? @db.Text
+  id           String    @id @default(cuid())
+  sessionToken String    @unique @map("session_token")
+  userId       String?   @map("user_id")
+  access_token String?   @db.Text
+  remote_ip    String?   @db.Text
+  user_agent   String?   @db.Text
   expires      Int
-  User         User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
+  User         User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
 
   @@map("sessions")
+}
+
+model Buckets {
+  id          String    @id @default(cuid())
+  user_id     String
+  bucket_name String
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
+  Folders     Folders[]
+  Files       Files[]
+
+  @@map("buckets")
+}
+
+model Folders {
+  id          String  @id @default(cuid())
+  bucket_id   String
+  folder_id   String?
+  folder_name String
+  user_id     String
+  User        User    @relation(fields: [user_id], references: [id])
+  Buckets     Buckets @relation(fields: [bucket_id], references: [id])
+  Files       Files[]
+
+  @@map("folders")
+}
+
+model Files {
+  id        String   @id @default(cuid())
+  user_id   String
+  bucket_id String
+  folder_id String?
+  file_name String
+  file_hash String
+  file_size Int
+  User      User     @relation(fields: [user_id], references: [id])
+  Buckets   Buckets  @relation(fields: [bucket_id], references: [id])
+  Folders   Folders? @relation(fields: [folder_id], references: [id])
+
+  @@map("files")
 }

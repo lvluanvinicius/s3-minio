@@ -65,8 +65,8 @@ export default async function handler(
       });
     }
 
-    // Recuperando token de navegador. _sort_app.webtoken
-    let webToken = getCookieValueFromRequest(req, "_sort_app.webtoken");
+    // Recuperando token de navegador. _s3_minio_app.webtoken
+    let webToken = getCookieValueFromRequest(req, "_s3_minio_app.webtoken");
 
     if (!webToken) {
       const data = {} as DataSession;
@@ -115,7 +115,7 @@ export default async function handler(
     const expires = getCurrentTimeInZone("number", "+3h") as number;
 
     // Adicionando o access_token na sessão.
-    const access_token = btoa(`${randomUUID()}`);
+    const access_token = btoa(`${randomUUID()}${randomUUID()}`);
 
     // Atualizando a session.
     const sessionUpdate = await prisma.session.update({
@@ -142,6 +142,8 @@ export default async function handler(
       data: { access_token, session_token: session.sessionToken },
     });
   } catch (error) {
+    console.log(error);
+
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
     }
