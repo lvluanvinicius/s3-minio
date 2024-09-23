@@ -56,29 +56,35 @@ model Buckets {
 }
 
 model Folders {
-  id          String  @id @default(cuid())
-  bucket_id   String
-  folder_id   String?
-  folder_name String
-  user_id     String
-  User        User    @relation(fields: [user_id], references: [id])
-  Buckets     Buckets @relation(fields: [bucket_id], references: [id])
-  Files       Files[]
+  id           String    @id @default(cuid())
+  bucket_id    String
+  folder_id    String? // Campo opcional que aponta para a pasta pai (pasta "mãe")
+  folder_name  String
+  user_id      String
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
+  User         User      @relation(fields: [user_id], references: [id])
+  Buckets      Buckets   @relation(fields: [bucket_id], references: [id])
+  Files        Files[] // Relação com arquivos
+  Subfolders   Folders[] @relation("FolderSubfolders") // Relação de subpastas (pasta mãe -> subpastas)
+  ParentFolder Folders?  @relation("FolderSubfolders", fields: [folder_id], references: [id]) // Relaciona com a pasta mãe (subpasta -> pasta mãe)
 
   @@map("folders")
 }
 
 model Files {
-  id        String   @id @default(cuid())
-  user_id   String
-  bucket_id String
-  folder_id String?
-  file_name String
-  file_hash String
-  file_size Int
-  User      User     @relation(fields: [user_id], references: [id])
-  Buckets   Buckets  @relation(fields: [bucket_id], references: [id])
-  Folders   Folders? @relation(fields: [folder_id], references: [id])
+  id         String    @id @default(cuid())
+  user_id    String
+  bucket_id  String
+  folder_id  String?
+  file_name  String
+  file_hash  String
+  file_size  Int
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+  User       User      @relation(fields: [user_id], references: [id])
+  Buckets    Buckets   @relation(fields: [bucket_id], references: [id])
+  Folders    Folders?  @relation(fields: [folder_id], references: [id])
 
   @@map("files")
 }
