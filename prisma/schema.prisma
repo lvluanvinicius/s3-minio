@@ -88,3 +88,14 @@ model Files {
 
   @@map("files")
 }
+
+model S3Config {
+  id          String    @id @default(cuid())
+  value       String    @db.Text
+  name        String    @unique
+  description String    @db.Text
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
+
+  @@map("s3_config")
+}
