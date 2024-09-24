@@ -99,3 +99,14 @@ model S3Config {
 
   @@map("s3_config")
 }
+
+model AppConfig {
+  id          String    @id @default(cuid())
+  value       String    @db.Text
+  name        String    @unique
+  description String    @db.Text
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
+
+  @@map("app_config")
+}
