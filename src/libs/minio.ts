@@ -1,15 +1,39 @@
 import { Client } from "minio";
+import { prisma } from "./prisma";
 
-const s3User = process.env.S3_APP_USERNAME as string;
-const s3Pass = process.env.S3_APP_PASSWORD as string;
+interface ConfigInterface {
+  [key: string]: string;
+}
 
-// Configurando o cliente MinIO
-const minioClient = new Client({
-  endPoint: "191.37.38.78", // IP do servidor onde o MinIO está rodando
-  port: 9000, // Porta do MinIO (API S3)
-  useSSL: false, // Defina como true se estiver usando HTTPS
-  accessKey: s3User, // Seu MINIO_ROOT_USER
-  secretKey: s3Pass, // Sua MINIO_ROOT_PASSWORD
-});
+async function getConfig(): Promise<Client> {
+  // Tipagem para a configuração com chave/valor do tipo string
+  const useConfig: ConfigInterface = {};
 
-export { minioClient };
+  // Recuperando configurações.
+  const config = await prisma.s3Config.findMany({});
+
+  // Recuperando configurações.
+  for await (let cnf of config) {
+    useConfig[cnf.name] = cnf.value;
+  }
+
+  // Recupera a porta e converte em inteiro.
+  const port = parseInt(useConfig["console_port"] || "9000");
+
+  // Criando conexão com o S3.
+  const minioClient = new Client({
+    endPoint: useConfig["api_url"].replace("https://", ""),
+    port,
+    useSSL: Boolean(useConfig["use_ssl"] || "false"),
+    accessKey: useConfig["sdk_console_username"],
+    secretKey: useConfig["sdk_console_password"],
+  });
+
+  return minioClient;
+}
+
+async function minioMain() {
+  return getConfig();
+}
+
+export { minioMain };

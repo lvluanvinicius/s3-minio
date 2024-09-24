@@ -1,7 +1,8 @@
-import { minioClient } from "@/libs/minio";
+import { minioMain } from "@/libs/minio";
 
 // Função cria um novo bucket.
 export async function createBucket({ bucket_name }: { bucket_name: string }) {
+  const minioClient = await minioMain();
   const exists = await minioClient.bucketExists(bucket_name);
 
   // Valida se já existe.
@@ -20,6 +21,7 @@ export async function destroyObject({
   bucket_name: string;
   file_name: string;
 }) {
+  const minioClient = await minioMain();
   // Efetuando exclusão.
   await minioClient.removeObject(bucket_name, file_name);
 }

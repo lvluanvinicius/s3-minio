@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { prisma } from "@/libs/prisma";
 import formidable from "formidable";
-import { minioClient } from "@/libs/minio";
+import { minioMain } from "@/libs/minio";
 import { randomUUID } from "crypto";
 
 // Função auxiliar para lidar com o parsing do arquivo usando formidable
@@ -63,6 +63,7 @@ export async function upload(req: NextApiRequest, res: NextApiResponse) {
     const filePath = file.filepath; // Caminho do arquivo local gerado pelo formidable
 
     // Enviar o arquivo diretamente para o MinIO com fPutObject
+    const minioClient = await minioMain();
     await minioClient.fPutObject(bucketName, objectName, filePath, {
       "Content-Type": file.mimetype || "",
       "X-Amz-Meta-Testing": "748607191d8634d543f31087a7359c20",
