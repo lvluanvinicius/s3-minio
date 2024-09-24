@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { apiAuth } from "@/middlewares/api-auth";
 import { prisma } from "@/libs/prisma";
 import { files } from "./files";
+import { destroy } from "./destroy";
 
 const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -14,7 +15,7 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
         return null;
 
       case "DELETE":
-        return null;
+        return destroy(req, res);
 
       default:
         throw new Error("Method is not allowed.", {

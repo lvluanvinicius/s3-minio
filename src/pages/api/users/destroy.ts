@@ -31,7 +31,7 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       status: true,
-      message: "Usuários recuperados com sucesso.",
+      message: "Usuário excluído com sucesso.",
       data: null,
     });
   } catch (error) {

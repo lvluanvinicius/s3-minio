@@ -1,5 +1,4 @@
 import { minioClient } from "@/libs/minio";
-import { Readable } from "stream";
 
 // Função cria um novo bucket.
 export async function createBucket({ bucket_name }: { bucket_name: string }) {
@@ -11,4 +10,16 @@ export async function createBucket({ bucket_name }: { bucket_name: string }) {
   }
 
   await minioClient.makeBucket(bucket_name);
+}
+
+// Função efetua a exclusão do arquivo dentro do S3.
+export async function destroyObject({
+  bucket_name,
+  file_name,
+}: {
+  bucket_name: string;
+  file_name: string;
+}) {
+  // Efetuando exclusão.
+  await minioClient.removeObject(bucket_name, file_name);
 }
