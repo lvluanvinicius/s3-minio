@@ -14,16 +14,17 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(cuid())
-  name       String
-  email      String    @unique
-  username   String    @unique
-  password   String
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
-  Session    Session[]
-  Files      Files[]
-  Folders    Folders[]
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  username     String    @unique
+  password     String
+  user_default Boolean   @default(false)
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
+  Session      Session[]
+  Files        Files[]
+  Folders      Folders[]
 
   @@map("users")
 }

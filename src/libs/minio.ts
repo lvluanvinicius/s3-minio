@@ -29,6 +29,8 @@ async function getConfig(): Promise<Client> {
     secretKey: useConfig["sdk_console_password"],
   });
 
+  await prisma.$disconnect();
+
   return minioClient;
 }
 
