@@ -2,6 +2,15 @@ import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { prisma } from "@/libs/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
 
+interface FullData {
+  item_name: string;
+  item_id: string;
+  item_type: "file" | "folder";
+  item_size: number | null;
+  item_created_at: Date | null;
+  item_updated_at: Date | null;
+}
+
 export async function files(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { page, paginate, folder_id, search } = req.query;
@@ -15,101 +24,94 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
     // Decrypt the folder ID, if necessary
     const folderId = folder_id ? (folder_id as string) : null;
 
-    // 1. List folders (based on folder_id or root if null) with search applied
-    const totalFolders = await prisma.folders.count({
-      where: {
-        folder_id: folderId, // Filter by parent folder or root
-        folder_name: {
-          contains: searchString, // Search by folder name
-        },
-      },
-    });
+    // Recuperando total de Arquivos e Pastas.
+    const totalFolders = await prisma.folders.count({});
+    const totalFiles = await prisma.files.count({});
 
+    // Pegando total de páginas.
+    const pages = Math.ceil((totalFolders + totalFiles) / perPage);
+
+    // Recupera as pastas.
     const folders = await prisma.folders.findMany({
+      skip,
+      take: perPage,
       where: {
-        folder_id: folderId, // Filter by parent folder or root
+        folder_id: folderId,
         folder_name: {
-          contains: searchString, // Search by folder name
+          contains: searchString,
         },
       },
-      skip: skip,
-      take: perPage, // Adjust pagination
       select: {
         id: true,
         folder_name: true,
+        updated_at: true,
         created_at: true,
-        _count: {
-          select: {
-            Files: true,
-          },
-        },
       },
       orderBy: {
-        folder_name: "asc", // Always order folders alphabetically
+        folder_name: "asc",
       },
     });
 
-    // 2. List files (based on folder_id or root if null) with search applied
-    const totalFiles = await prisma.files.count({
-      where: {
-        folder_id: folderId,
-        file_name: {
-          contains: searchString, // Search by file name
-        },
-      },
-    });
-
-    const remainingPaginationForFiles = perPage - folders.length; // Adjust pagination based on number of folders listed
-
+    // Recupera os arquivos.
     const files = await prisma.files.findMany({
+      skip,
+      take: perPage - folders.length,
+      select: {
+        id: true,
+        file_name: true,
+        file_size: true,
+        updated_at: true,
+        created_at: true,
+      },
       where: {
         folder_id: folderId,
         file_name: {
           contains: searchString,
         },
       },
-      skip: Math.max(skip - totalFolders, 0), // Skip files after folders are paginated
-      take: remainingPaginationForFiles, // Ensure we paginate only the remaining space after folders
-      select: {
-        id: true,
-        file_name: true,
-        file_size: true,
-        file_hash: true,
-        created_at: true,
-      },
       orderBy: {
-        file_name: "asc", // Always order files alphabetically after folders
+        file_name: "asc",
       },
     });
 
-    // 3. Merge folders and files into a single array, maintaining folder priority
-    const combinedResults = [
-      ...folders.map((folder) => ({
-        type: "folder", // Distinguish folder entries
-        id: folder.id,
-        name: folder.folder_name,
-        created_at: folder.created_at,
-        file_count: folder._count.Files,
-      })),
-      ...files.map((file) => ({
-        type: "file", // Distinguish file entries
-        id: file.id,
-        name: file.file_name,
-        size: file.file_size,
-        hash: file.file_hash,
-        created_at: file.created_at,
-      })),
-    ];
+    const fullData = [] as FullData[];
 
-    // 4. Return the results
+    folders.map((folder) => {
+      fullData.push({
+        item_id: folder.id,
+        item_name: folder.folder_name,
+        item_type: "folder",
+        item_created_at: folder.created_at,
+        item_updated_at: folder.updated_at,
+        item_size: null,
+      });
+    });
+
+    files.map((file) => {
+      fullData.push({
+        item_id: file.id,
+        item_name: file.file_name,
+        item_type: "file",
+        item_created_at: file.created_at,
+        item_updated_at: file.updated_at,
+        item_size: file.file_size,
+      });
+    });
+
     return res.status(200).json({
       status: true,
-      message: "Listagem de pastas e arquivos bem-sucedida.",
+      message: "Pastas e arquivos recuperados com sucesso.",
       data: {
-        total_records: totalFolders + totalFiles, // Total folders + files
-        current_page: setPage,
         per_page: perPage,
-        data: combinedResults,
+        total_page: folders.length + files.length,
+        current_page: setPage,
+        total: totalFolders + totalFiles,
+        pages,
+        data: {
+          total_folders: totalFolders,
+          total_files: totalFiles,
+          result: fullData,
+        },
       },
     });
   } catch (error) {

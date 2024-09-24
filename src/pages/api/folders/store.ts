@@ -59,7 +59,7 @@ export async function store(req: NextApiRequest, res: NextApiResponse) {
       });
 
       if (folderExists >= 1) {
-        throw new Error(`Já existe uma subpasta com o nome ${folder_name}.`);
+        throw new Error(`Já existe uma pasta com o nome ${folder_name}.`);
       }
     }
 
