@@ -72,7 +72,8 @@ export function SessionProvider({ children }: SessionProvider) {
           return router.push("/sign-in");
         }
 
-        return toast.error(error.message);
+        // return toast.error(error.message);
+        return;
       }
 
       if (error instanceof Error) {

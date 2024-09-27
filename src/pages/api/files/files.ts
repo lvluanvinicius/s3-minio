@@ -9,6 +9,7 @@ interface FullData {
   item_size: number | null;
   item_created_at: Date | null;
   item_updated_at: Date | null;
+  item_owner: string;
 }
 
 export async function files(req: NextApiRequest, res: NextApiResponse) {
@@ -46,6 +47,12 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         folder_name: true,
         updated_at: true,
         created_at: true,
+
+        User: {
+          select: {
+            username: true,
+          },
+        },
       },
       orderBy: {
         folder_name: "asc",
@@ -62,9 +69,17 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         file_size: true,
         updated_at: true,
         created_at: true,
+
+        User: {
+          select: {
+            username: true,
+          },
+        },
       },
       where: {
-        folder_id: folderId,
+        folder_id: {
+          equals: folderId,
+        },
         file_name: {
           contains: searchString,
         },
@@ -84,6 +99,7 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         item_created_at: folder.created_at,
         item_updated_at: folder.updated_at,
         item_size: null,
+        item_owner: `@${folder.User.username}`,
       });
     });
 
@@ -95,8 +111,10 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         item_created_at: file.created_at,
         item_updated_at: file.updated_at,
         item_size: file.file_size,
+        item_owner: `@${file.User.username}`,
       });
     });
+    console.log(files);
 
     return res.status(200).json({
       status: true,

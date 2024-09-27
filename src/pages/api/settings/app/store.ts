@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export async function store(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { value, name, description } = req.body;
+    const { value, name, description, bucket_id } = req.body;
 
     // Validando content.
     errorInvalidContentBody({ value, name, description }, [
@@ -25,7 +25,7 @@ export async function store(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const config = await prisma.appConfig.create({
-      data: { value, name, description },
+      data: { value, name, description, bucket_id },
     });
 
     return res.status(200).json({

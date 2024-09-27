@@ -1,27 +1,8 @@
+import { apiHandlerErros } from "@/exceptions/api_handler_erros";
 import { prisma } from "@/libs/prisma";
-import { GetServerSideProps } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 
-import { LayoutSignIn } from "./_layouts/sign-layout";
-import { SignIn } from "./sign-in";
-
-interface AppConfig {
-  config: {
-    app_bucket: string;
-    app_name: string;
-    app_logo: string;
-    s3_api_url: string;
-  };
-}
-
-export default function handler({ config }: AppConfig) {
-  return (
-    <LayoutSignIn>
-      <SignIn config={config} />
-    </LayoutSignIn>
-  );
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
+const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   try {
     const appconfig = await prisma.appConfig.findMany({
       where: {
@@ -82,18 +63,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       config[`s3_${key}`] = conf.value;
     }
 
-    return {
-      props: {
-        config,
-      },
-    };
+    return res.status(200).json({
+      status: true,
+      message: "",
+      data: config,
+    });
   } catch (error) {
-    console.log(error);
+    if (error instanceof Error) {
+      return apiHandlerErros(error, res);
+    }
 
-    return {
-      props: {},
-    };
+    return res.status(400).json({
+      status: false,
+      message: "Erro desconhecido.",
+      data: null,
+    });
   } finally {
     await prisma.$disconnect();
   }
 };
+
+export default handler;

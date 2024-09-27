@@ -59,7 +59,7 @@ export async function upload(req: NextApiRequest, res: NextApiResponse) {
     // Configurar os parâmetros para o upload no MinIO
     const bucketName = bucketExists.bucket_name; // Substitua pelo nome do seu bucket
     const objectName =
-      `${Date.now()} - ${file.originalFilename}` || `undefined_${Date.now()}`; // Nome do arquivo no bucket
+      `${Date.now()}-${file.originalFilename}` || `undefined_${Date.now()}`; // Nome do arquivo no bucket
     const filePath = file.filepath; // Caminho do arquivo local gerado pelo formidable
 
     // Enviar o arquivo diretamente para o MinIO com fPutObject

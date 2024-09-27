@@ -18,7 +18,7 @@ interface DataSession {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   try {
     // Validando metodo.
@@ -107,7 +107,7 @@ export default async function handler(
         "Erro ao tentar criar um web-token de sessão. Por favor, limpe os cookies, atualize a página e tente novamente.",
         {
           cause: "ERROR_UPDATE_DATA",
-        }
+        },
       );
     }
 
@@ -142,8 +142,6 @@ export default async function handler(
       data: { access_token, session_token: session.sessionToken },
     });
   } catch (error) {
-    console.log(error);
-
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
     }

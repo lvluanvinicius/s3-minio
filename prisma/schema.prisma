@@ -45,13 +45,14 @@ model Session {
 }
 
 model Buckets {
-  id          String    @id @default(cuid())
+  id          String      @id @default(cuid())
   user_id     String
   bucket_name String
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @default(now())
+  created_at  DateTime?   @default(now())
+  updated_at  DateTime?   @default(now())
   Folders     Folders[]
   Files       Files[]
+  AppConfig   AppConfig[]
 
   @@map("buckets")
 }
@@ -106,8 +107,10 @@ model AppConfig {
   value       String    @db.Text
   name        String    @unique
   description String    @db.Text
+  bucket_id   String?
   created_at  DateTime? @default(now())
   updated_at  DateTime? @default(now())
+  Buckets     Buckets?  @relation(fields: [bucket_id], references: [id])
 
   @@map("app_config")
 }

@@ -6,7 +6,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export async function update(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { value, name, description } = req.body;
+    const { value, name, description, bucket_id } = req.body;
     const { config_id } = req.query;
 
     // Validando content.
@@ -34,6 +34,7 @@ export async function update(req: NextApiRequest, res: NextApiResponse) {
         name,
         description,
         updated_at: getCurrentTimeInZone("date") as Date,
+        bucket_id,
       },
       where: {
         id: config_id as string,
