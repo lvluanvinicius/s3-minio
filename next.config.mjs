@@ -6,7 +6,6 @@ const nextConfig = {
     remotePatterns: [
       {
         hostname: "prv-s3.grupocednet.com.br",
-        protocol: "https",
       },
     ],
   },
