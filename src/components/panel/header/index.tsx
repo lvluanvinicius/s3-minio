@@ -56,6 +56,7 @@ export function Header() {
               <DropdownItem key={"profile"} href="/profile">
                 Perfil
               </DropdownItem>
+              <DropdownItem key={"exit"}>Sair</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>

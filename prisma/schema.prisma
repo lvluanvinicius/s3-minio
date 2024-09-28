@@ -75,18 +75,19 @@ model Folders {
 }
 
 model Files {
-  id         String    @id @default(cuid())
+  id         String      @id @default(cuid())
   user_id    String
   bucket_id  String
   folder_id  String?
   file_name  String
   file_hash  String
   file_size  Int
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
-  User       User      @relation(fields: [user_id], references: [id])
-  Buckets    Buckets   @relation(fields: [bucket_id], references: [id])
-  Folders    Folders?  @relation(fields: [folder_id], references: [id])
+  created_at DateTime?   @default(now())
+  updated_at DateTime?   @default(now())
+  User       User        @relation(fields: [user_id], references: [id])
+  Buckets    Buckets     @relation(fields: [bucket_id], references: [id])
+  Folders    Folders?    @relation(fields: [folder_id], references: [id])
+  Histories  Histories[]
 
   @@map("files")
 }
@@ -113,4 +114,15 @@ model AppConfig {
   Buckets     Buckets?  @relation(fields: [bucket_id], references: [id])
 
   @@map("app_config")
+}
+
+model Histories {
+  id      String @id @default(cuid())
+  clock   BigInt
+  ns      BigInt
+  value   Float
+  file_id String
+  File    Files  @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+  @@map("histories")
 }

@@ -30,6 +30,7 @@ const config: Config = {
           colors: {
             primary: "#002E62",
             secondary: "#006FEE",
+            success: "#00D008",
             content1: "#E8E8E8",
             content2: "#D2D2D2",
           },

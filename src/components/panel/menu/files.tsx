@@ -4,6 +4,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import Link from "next/link";
 
 export function Files() {
   return (
@@ -12,10 +13,10 @@ export function Files() {
         Arquivos ▾
       </DropdownTrigger>
       <DropdownMenu variant="shadow">
-        <DropdownItem key="list" href="/files">
+        <DropdownItem as={Link} key="list" href="/files">
           Arquivo
         </DropdownItem>
-        <DropdownItem key="new" href="/files/create">
+        <DropdownItem as={Link} key="new" href="/files/create">
           + Novo Arquivo
         </DropdownItem>
       </DropdownMenu>

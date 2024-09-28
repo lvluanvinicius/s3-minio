@@ -7,6 +7,7 @@ interface FullData {
   item_id: string;
   item_type: "file" | "folder";
   item_size: number | null;
+  item_total_files: number | null;
   item_created_at: Date | null;
   item_updated_at: Date | null;
   item_owner: string;
@@ -51,6 +52,12 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         User: {
           select: {
             username: true,
+          },
+        },
+
+        _count: {
+          select: {
+            Files: true,
           },
         },
       },
@@ -99,6 +106,7 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         item_created_at: folder.created_at,
         item_updated_at: folder.updated_at,
         item_size: null,
+        item_total_files: folder._count.Files,
         item_owner: `@${folder.User.username}`,
       });
     });
@@ -111,6 +119,7 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         item_created_at: file.created_at,
         item_updated_at: file.updated_at,
         item_size: file.file_size,
+        item_total_files: null,
         item_owner: `@${file.User.username}`,
       });
     });

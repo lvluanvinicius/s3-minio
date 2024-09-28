@@ -6,7 +6,7 @@ export function decodeErrorMessage(message: string) {
     // Tenta decodificar como UTF-8 usando TextDecoder, que é mais robusto para diferentes encodings
     const decoder = new TextDecoder("utf-8");
     const encodedText = new Uint8Array(
-      message.split("").map((char) => char.charCodeAt(0))
+      message.split("").map((char) => char.charCodeAt(0)),
     );
     return decoder.decode(encodedText);
   } catch (err) {
@@ -27,7 +27,7 @@ type ReturnType = "date" | "string" | "number";
 
 export function getCurrentTimeInZone(
   returnType: ReturnType,
-  offset?: string
+  offset?: string,
 ): Date | string | number {
   // Cria uma instância de Date com a hora atual
   let date: Date = new Date();
@@ -51,7 +51,7 @@ export function getCurrentTimeInZone(
 
   // Obter a data ajustada para o fuso horário "America/Sao_Paulo" diretamente
   const saoPauloDate = new Date(
-    date.toLocaleString("en-US", { timeZone: process.env.TIMEZONE })
+    date.toLocaleString("en-US", { timeZone: process.env.TIMEZONE }),
   );
 
   switch (returnType) {
@@ -75,7 +75,7 @@ export function getCurrentTimeInZone(
       return Math.floor(saoPauloDate.getTime() / 1000); // Converte o timestamp para segundos
     default:
       throw new Error(
-        'Tipo de retorno inválido. Use "date", "string" ou "number".'
+        'Tipo de retorno inválido. Use "date", "string" ou "number".',
       );
   }
 }
@@ -86,3 +86,25 @@ export const dateExtFormatter = (date: string) => {
     locale: ptBR,
   });
 };
+
+export function formatBytes(bytes: number, decimals = 2): string {
+  if (bytes === 0) return "0 Bytes";
+
+  const k = 1024;
+  const sizes = [
+    "Bytes",
+    "KiB",
+    "MiB",
+    "GiB",
+    "TiB",
+    "PiB",
+    "EiB",
+    "ZiB",
+    "YiB",
+  ];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  const sizeInUnit = bytes / Math.pow(k, i);
+
+  return `${parseFloat(sizeInUnit.toFixed(decimals))} ${sizes[i]}`;
+}
