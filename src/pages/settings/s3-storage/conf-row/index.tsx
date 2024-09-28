@@ -20,13 +20,16 @@ interface ConfEditProps {
 export function ConfRow({ conf }: ConfEditProps) {
   const [edit, setEdit] = useState(false);
 
-  const handlerUpdate = useCallback(async function () {
-    try {
-      setEdit(false);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const handlerUpdate = useCallback(
+    async function () {
+      try {
+        setEdit(false);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [setEdit],
+  );
 
   return (
     <tr className="hover:bg-secondary/10">

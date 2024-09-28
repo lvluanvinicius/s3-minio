@@ -31,13 +31,12 @@ export function FolderEdit({ item }: FolderEdit) {
           throw new Error("Nenhum valor foi informado para o nome da pasta.");
         }
 
-        console.log(valueName);
         setEdit(false);
       } catch (error) {
         console.log(error);
       }
     },
-    [valueName],
+    [valueName, setEdit],
   );
 
   return (
