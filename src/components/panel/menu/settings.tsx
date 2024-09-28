@@ -4,6 +4,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import Link from "next/link";
 
 export function Settings() {
   return (
@@ -12,10 +13,10 @@ export function Settings() {
         Configurações ▾
       </DropdownTrigger>
       <DropdownMenu variant="shadow">
-        <DropdownItem key="list" href="/settings/app">
+        <DropdownItem as={Link} key="list" href="/settings/app">
           Aplicativo
         </DropdownItem>
-        <DropdownItem key="new" href="/settings/s3-storage">
+        <DropdownItem as={Link} key="new" href="/settings/s3-storage">
           S3 Storage
         </DropdownItem>
       </DropdownMenu>

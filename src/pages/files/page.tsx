@@ -1,11 +1,15 @@
 import { formatBytes } from "@/utils/formatter";
-import { LayoutDefault } from "../_layouts/default";
-import { FaFolder } from "react-icons/fa";
+
 import { Paginate } from "@/components/panel/paginate";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DisplayCounts } from "@/components/panel/display-counts";
 import { Button, Input } from "@nextui-org/react";
+
+import { FaFolder } from "react-icons/fa";
+import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+// import { IoCloseCircleOutline } from "react-icons/io5";
+import { UseLayout } from "../_layouts/use-layout";
 
 export function Page() {
   const rows = [
@@ -102,7 +106,7 @@ export function Page() {
   ];
 
   return (
-    <LayoutDefault>
+    <UseLayout>
       <div className="flex h-full w-[80%] flex-col items-center justify-between gap-4 rounded-md border bg-content1 p-6 shadow-sm shadow-black/40">
         <DisplayCounts />
 
@@ -124,10 +128,11 @@ export function Page() {
               <th className="whitespace-nowrap py-2">Tamanho</th>
               <th className="whitespace-nowrap py-2">Lançado há</th>
               <th className="whitespace-nowrap py-2">Criado por</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr className="hover:bg-secondary/10">
               <td className="whitespace-nowrap py-2 pl-2">
                 <button
                   className="flex gap-1 bg-none text-sm font-bold"
@@ -146,7 +151,7 @@ export function Page() {
 
               if (item.item_type === "file") {
                 return (
-                  <tr className="text-sm">
+                  <tr className="text-sm hover:bg-secondary/10">
                     <td className="whitespace-nowrap py-2 pl-2">
                       {item.item_name}
                     </td>
@@ -162,17 +167,25 @@ export function Page() {
                     <td className="whitespace-nowrap py-2">
                       {item.item_owner}
                     </td>
-                    <td className="whitespace-nowrap py-2"></td>
+                    <td className="whitespace-nowrap py-2">
+                      <div className="flex items-center justify-end">
+                        <Button variant="ghost" className="" size="sm">
+                          <FaRegTrashAlt size={16} />
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 );
               }
 
               if (item.item_type === "folder") {
                 return (
-                  <tr className="text-sm">
-                    <td className="flex gap-1 whitespace-nowrap py-2 pl-2 font-bold">
-                      <FaFolder size={20} color="gray" />
-                      {item.item_name}
+                  <tr className="text-sm hover:bg-secondary/10">
+                    <td className="whitespace-nowrap py-2 pl-2">
+                      <div className="flex gap-1 font-bold">
+                        <FaFolder size={20} color="gray" />
+                        {item.item_name}
+                      </div>
                     </td>
                     <td className="whitespace-nowrap py-2">
                       {item.item_total_files} iten(s)
@@ -186,7 +199,19 @@ export function Page() {
                     <td className="whitespace-nowrap py-2">
                       {item.item_owner}
                     </td>
-                    <td className="whitespace-nowrap py-2"></td>
+                    <td className="min-w-[10rem] whitespace-nowrap py-2">
+                      <div className="flex w-full items-center justify-end">
+                        {/* <Button variant="ghost" className="" size="sm">
+                          <IoCloseCircleOutline size={16} />
+                        </Button> */}
+                        <Button variant="ghost" className="" size="sm">
+                          <FaEdit size={16} />
+                        </Button>
+                        <Button variant="ghost" className="" size="sm">
+                          <FaRegTrashAlt size={16} />
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 );
               }
@@ -195,6 +220,6 @@ export function Page() {
         </table>
         <Paginate />
       </div>
-    </LayoutDefault>
+    </UseLayout>
   );
 }

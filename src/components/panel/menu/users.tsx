@@ -4,6 +4,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
+import Link from "next/link";
 
 export function Users() {
   return (
@@ -12,10 +13,10 @@ export function Users() {
         Usuários ▾
       </DropdownTrigger>
       <DropdownMenu variant="shadow">
-        <DropdownItem key="list" href="/users">
+        <DropdownItem as={Link} key="list" href="/users">
           Usuários
         </DropdownItem>
-        <DropdownItem key="new" href="/users/create">
+        <DropdownItem as={Link} key="new" href="/users/create">
           + Novo Usuário
         </DropdownItem>
       </DropdownMenu>
