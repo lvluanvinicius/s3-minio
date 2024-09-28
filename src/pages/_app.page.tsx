@@ -1,4 +1,3 @@
-import { SessionProvider } from "@/contexts/session";
 import { queryClient } from "@/services/queryClient";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -14,9 +13,7 @@ export default function App({ pageProps, Component }: AppProps) {
       <HelmetProvider>
         <Toaster richColors closeButton />
         <QueryClientProvider client={queryClient}>
-          <SessionProvider>
-            <Component {...pageProps} />
-          </SessionProvider>
+          <Component {...pageProps} />
         </QueryClientProvider>
       </HelmetProvider>
     </NextUIProvider>

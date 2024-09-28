@@ -1,11 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isAuthenticated } from "@/libs/auth";
-
-console.log("chamando....");
+console.log("teste");
 
 export const config = {
   matcher: [
-    "/home",
+    "/home/:path*",
     "/files/:path*",
     "/users/:path*",
     "/settings/:path*",
@@ -14,9 +13,9 @@ export const config = {
 };
 
 export async function middleware(request: NextRequest) {
-  if (!isAuthenticated(request)) {
-    return NextResponse.redirect("/sign-in");
-  }
+  return NextResponse.redirect(new URL("/", request.url));
+  // if (!isAuthenticated(request)) {
+  // }
 
-  return NextResponse.next();
+  // return NextResponse.next();
 }

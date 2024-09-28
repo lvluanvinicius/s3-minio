@@ -16,7 +16,7 @@ interface SessionContextProps {
   user: UserInterface | null;
   signIn: (
     username: string,
-    password: string
+    password: string,
   ) => Promise<PrismaActionResponse<[]>>;
   isLogged: () => Promise<boolean | undefined>;
   notLogged: () => Promise<boolean | undefined>;
@@ -52,7 +52,7 @@ export function SessionProvider({ children }: SessionProvider) {
   // Efetua o carregamento dos dados de usuários.
   const userLoading = useCallback(async () => {
     try {
-      const response = await get<UserInterface>("/api/user", {
+      const response = await get<UserInterface>("/api/profile", {
         headers: {
           Accept: "application/json",
         },
@@ -69,7 +69,7 @@ export function SessionProvider({ children }: SessionProvider) {
     } catch (error) {
       if (error instanceof FetchError) {
         if (error.status === 401) {
-          return router.push("/sign-in");
+          return router.push("/");
         }
 
         // return toast.error(error.message);
@@ -81,13 +81,13 @@ export function SessionProvider({ children }: SessionProvider) {
       }
 
       toast.error(
-        "Houve um erro desconhecido ao recuperar o usuário de sessão."
+        "Houve um erro desconhecido ao recuperar o usuário de sessão.",
       );
     }
   }, [setUser, setIsAuthenticated, router]);
 
   const signIn = useCallback(async (username: string, password: string) => {
-    const response = await post("/api/sign-in", {
+    const response = await post("/api", {
       password,
       username,
     });
@@ -105,9 +105,7 @@ export function SessionProvider({ children }: SessionProvider) {
   // Valida se o usuário não está logado.
   const notLogged = useCallback(async () => {
     if (!isAuthenticated) {
-      console.log(isAuthenticated, !isAuthenticated, user);
-
-      return router.replace("/sign-in");
+      return router.replace("/");
     }
   }, [router, isAuthenticated, user]);
 
