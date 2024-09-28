@@ -3,6 +3,7 @@ import { Button, Input } from "@nextui-org/react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+import { ConfRow } from "./conf-row";
 
 export function Page() {
   const rows = [
@@ -85,35 +86,7 @@ export function Page() {
         </thead>
         <tbody className="text-sm">
           {rows.map((conf) => {
-            return (
-              <tr className="hover:bg-secondary/10">
-                <td className="whitespace-nowrap py-2 pl-2">{conf.name}</td>
-                <td className="whitespace-nowrap py-2">{conf.value}</td>
-                <td className="whitespace-nowrap py-2">{conf.description}</td>
-                <td className="whitespace-nowrap py-2">
-                  {formatDistanceToNow(conf.created_at, {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                </td>
-                <td className="whitespace-nowrap py-2">
-                  {formatDistanceToNow(conf.updated_at, {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                </td>
-                <td>
-                  <div className="flex w-full items-center justify-end">
-                    <Button variant="ghost" className="" size="sm">
-                      <FaEdit size={16} />
-                    </Button>
-                    <Button variant="ghost" className="" size="sm">
-                      <FaRegTrashAlt size={16} />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            );
+            return <ConfRow key={conf.id} conf={conf} />;
           })}
         </tbody>
       </table>

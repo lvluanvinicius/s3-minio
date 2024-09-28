@@ -7,9 +7,9 @@ import { DisplayCounts } from "@/components/panel/display-counts";
 import { Button, Input } from "@nextui-org/react";
 
 import { FaFolder } from "react-icons/fa";
-import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
-// import { IoCloseCircleOutline } from "react-icons/io5";
 import { UseLayout } from "../_layouts/use-layout";
+import { FolderEdit } from "./folder-edit";
+import { FileDelete } from "./file-delete";
 
 export function Page() {
   const rows = [
@@ -103,7 +103,16 @@ export function Page() {
       item_total_files: null,
       item_owner: "@luan",
     },
-  ];
+  ] as {
+    item_id: string;
+    item_name: string;
+    item_type: string;
+    item_created_at: string;
+    item_updated_at: string;
+    item_size: number | null;
+    item_total_files: number | null;
+    item_owner: string;
+  }[];
 
   return (
     <UseLayout>
@@ -128,7 +137,7 @@ export function Page() {
               <th className="whitespace-nowrap py-2">Tamanho</th>
               <th className="whitespace-nowrap py-2">Lançado há</th>
               <th className="whitespace-nowrap py-2">Criado por</th>
-              <th></th>
+              <th className="whitespace-nowrap py-2"></th>
             </tr>
           </thead>
           <tbody>
@@ -169,9 +178,7 @@ export function Page() {
                     </td>
                     <td className="whitespace-nowrap py-2">
                       <div className="flex items-center justify-end">
-                        <Button variant="ghost" className="" size="sm">
-                          <FaRegTrashAlt size={16} />
-                        </Button>
+                        <FileDelete fileId={item.item_id} />
                       </div>
                     </td>
                   </tr>
@@ -179,41 +186,7 @@ export function Page() {
               }
 
               if (item.item_type === "folder") {
-                return (
-                  <tr className="text-sm hover:bg-secondary/10">
-                    <td className="whitespace-nowrap py-2 pl-2">
-                      <div className="flex gap-1 font-bold">
-                        <FaFolder size={20} color="gray" />
-                        {item.item_name}
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap py-2">
-                      {item.item_total_files} iten(s)
-                    </td>
-                    <td className="whitespace-nowrap py-2">
-                      {formatDistanceToNow(item.item_created_at, {
-                        addSuffix: true,
-                        locale: ptBR,
-                      })}
-                    </td>
-                    <td className="whitespace-nowrap py-2">
-                      {item.item_owner}
-                    </td>
-                    <td className="min-w-[10rem] whitespace-nowrap py-2">
-                      <div className="flex w-full items-center justify-end">
-                        {/* <Button variant="ghost" className="" size="sm">
-                          <IoCloseCircleOutline size={16} />
-                        </Button> */}
-                        <Button variant="ghost" className="" size="sm">
-                          <FaEdit size={16} />
-                        </Button>
-                        <Button variant="ghost" className="" size="sm">
-                          <FaRegTrashAlt size={16} />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                );
+                return <FolderEdit item={item} />;
               }
             })}
           </tbody>

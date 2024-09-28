@@ -2,6 +2,7 @@ import { Paginate } from "@/components/panel/paginate";
 import { Button, Input } from "@nextui-org/react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ConfRow } from "./conf-row";
 
 export function Page() {
   const rows = [
@@ -32,7 +33,15 @@ export function Page() {
       created_at: "2024-09-27T15:35:16.079Z",
       updated_at: "2024-09-27T15:35:16.079Z",
     },
-  ];
+  ] as {
+    id: string;
+    value: string;
+    name: string;
+    description: string;
+    bucket_id: string | null;
+    created_at: string;
+    updated_at: string;
+  }[];
 
   return (
     <div className="flex h-full w-[80%] flex-col items-center justify-between gap-4 rounded-md border bg-content1 p-6 shadow-sm shadow-black/40">
@@ -56,31 +65,15 @@ export function Page() {
             <th className="whitespace-nowrap py-2 pl-2">Nome</th>
             <th className="whitespace-nowrap py-2">Valor</th>
             <th className="whitespace-nowrap py-2">Descrição</th>
+            <th className="whitespace-nowrap py-2">ID do Bucket</th>
             <th className="whitespace-nowrap py-2">Criado há</th>
-            <th></th>
+            <th className="whitespace-nowrap py-2">Atualizado há</th>
+            <th className="whitespace-nowrap py-2"></th>
           </tr>
         </thead>
         <tbody className="text-sm">
           {rows.map((conf) => {
-            return (
-              <tr className="hover:bg-secondary/10">
-                <td className="whitespace-nowrap py-2 pl-2">{conf.name}</td>
-                <td className="whitespace-nowrap py-2">{conf.value}</td>
-                <td className="whitespace-nowrap py-2">{conf.description}</td>
-                <td className="whitespace-nowrap py-2">
-                  {formatDistanceToNow(conf.created_at, {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                </td>
-                <td className="whitespace-nowrap py-2">
-                  {formatDistanceToNow(conf.updated_at, {
-                    addSuffix: true,
-                    locale: ptBR,
-                  })}
-                </td>
-              </tr>
-            );
+            return <ConfRow key={conf.id} conf={conf} />;
           })}
         </tbody>
       </table>
