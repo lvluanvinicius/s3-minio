@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 
 import { LayoutSignIn } from "./_layouts/sign-layout";
 import { SignIn } from "./sign-in";
+import { isAuthenticated } from "@/libs/auth";
 
 interface AppConfig {
   config: {
@@ -23,6 +24,18 @@ export default function handler({ config }: AppConfig) {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
+    // Validar login antes.
+    const IsAuth = await isAuthenticated(context.req.cookies);
+
+    if (IsAuth) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/home",
+        },
+      };
+    }
+
     const appconfig = await prisma.appConfig.findMany({
       where: {
         name: {

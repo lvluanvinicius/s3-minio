@@ -7,8 +7,6 @@ interface LayoutDefaultProps {
 }
 
 export function LayoutDefault({ children }: LayoutDefaultProps) {
-  // const logoUri = ;
-
   return (
     <div className="h-screen w-screen">
       <Header />

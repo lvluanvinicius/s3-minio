@@ -5,6 +5,7 @@ interface AppSettings {
   app_bucket: string;
   app_name: string;
   app_logo: string;
+  app_bucket_id: string;
   s3_api_url: string;
 }
 

@@ -7,7 +7,7 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
     const appconfig = await prisma.appConfig.findMany({
       where: {
         name: {
-          in: ["app_logo", "app_name", "app_bucket"],
+          in: ["app_logo", "app_name", "app_bucket", "bucket_id"],
         },
       },
       select: {
@@ -16,6 +16,7 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
         Buckets: {
           select: {
             bucket_name: true,
+            id: true,
           },
         },
       },
@@ -52,6 +53,7 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
         const { Buckets } = conf;
         if (Buckets) {
           config[key] = Buckets.bucket_name;
+          config[`${key}_id`] = Buckets.id;
         }
       } else {
         config[key] = conf.value;

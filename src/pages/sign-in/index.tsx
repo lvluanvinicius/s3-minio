@@ -1,5 +1,12 @@
-import { Button, Input } from "@nextui-org/react";
 import Image from "next/image";
+import { Button, Input } from "@nextui-org/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useCallback, useEffect } from "react";
+import { FetchError, post } from "@/services/app";
+import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 interface AppConfig {
   config: {
@@ -10,7 +17,61 @@ interface AppConfig {
   };
 }
 
+const signInSchema = z.object({
+  username: z.string().min(1, "Informe o nome de usuário."),
+  password: z.string().min(1, "Informe a senha."),
+});
+
+type SignInType = z.infer<typeof signInSchema>;
+
 export function SignIn({ config }: AppConfig) {
+  const router = useRouter();
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<SignInType>({
+    resolver: zodResolver(signInSchema),
+  });
+
+  const handleSignIn = useCallback(
+    async function ({ password, username }: SignInType) {
+      try {
+        const response = await post(
+          "/api/auth/sign-in",
+          { password, username },
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          },
+        );
+
+        if (response.status) {
+          return router.push("/home");
+        }
+
+        throw new Error(response.message);
+      } catch (error) {
+        if (error instanceof FetchError) {
+          return toast.error(error.message);
+        }
+
+        if (error instanceof Error) {
+          return toast.error(error.message);
+        }
+
+        return toast.error("Houve um erro desconhecido.");
+      }
+    },
+    [router],
+  );
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
+
   return (
     <div className="fixed left-[50%] top-[50%] flex h-[28rem] w-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 rounded-xl bg-primary text-white shadow-md shadow-primary">
       <div className="flex h-[6rem] w-full flex-col items-center justify-center border-b border-white/50">
@@ -28,10 +89,13 @@ export function SignIn({ config }: AppConfig) {
         <h2 className="uppercase">Faça login para continuar</h2>
       </div>
 
-      <div className="flex flex-col gap-4 px-12">
+      <form
+        onSubmit={handleSubmit(handleSignIn)}
+        className="flex flex-col gap-4 px-12"
+      >
         <Input
           variant="bordered"
-          color="secondary"
+          color={errors.username ? "danger" : "secondary"}
           label="Usuário"
           labelPlacement="inside"
           fullWidth
@@ -39,10 +103,11 @@ export function SignIn({ config }: AppConfig) {
           type="text"
           radius="md"
           placeholder="Entre com seu usuário"
+          {...register("username")}
         />
         <Input
           variant="bordered"
-          color="secondary"
+          color={errors.password ? "danger" : "secondary"}
           label="Senha"
           labelPlacement="inside"
           fullWidth
@@ -50,12 +115,19 @@ export function SignIn({ config }: AppConfig) {
           type="password"
           radius="md"
           placeholder="Entre com sua senha"
+          {...register("password")}
         />
 
-        <Button variant="ghost" color="secondary" className="text-white">
+        <Button
+          type="submit"
+          variant="ghost"
+          color="secondary"
+          className="text-white disabled:bg-secondary"
+          disabled={isSubmitting}
+        >
           Entrar
         </Button>
-      </div>
+      </form>
 
       <div className="flex w-full items-center justify-between px-12">
         <div />

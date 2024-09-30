@@ -8,7 +8,7 @@ const nextConfig = {
         hostname: "prv-s3.grupocednet.com.br",
       },
       {
-        hostname: "10.254.192.180",
+        hostname: "localhost",
       },
     ],
   },

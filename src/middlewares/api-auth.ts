@@ -21,7 +21,7 @@ export function apiAuth(handler: NextApiHandler) {
           "O  'Accept' deve ser informado como 'application/json'.",
           {
             cause: "ERROR_INCORRECT_VALUES_HEADERS",
-          }
+          },
         );
       }
 
@@ -39,7 +39,7 @@ export function apiAuth(handler: NextApiHandler) {
             "O  'Authorization' deve ser informado como 'Bearer token-string'.",
             {
               cause: "ERROR_INCORRECT_VALUES_HEADERS",
-            }
+            },
           );
         }
 
