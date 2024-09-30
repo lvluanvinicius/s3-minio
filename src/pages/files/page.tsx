@@ -160,7 +160,10 @@ export function Page() {
 
               if (item.item_type === "file") {
                 return (
-                  <tr className="text-sm hover:bg-secondary/10">
+                  <tr
+                    key={item.item_id}
+                    className="text-sm hover:bg-secondary/10"
+                  >
                     <td className="whitespace-nowrap py-2 pl-2">
                       {item.item_name}
                     </td>
@@ -186,7 +189,7 @@ export function Page() {
               }
 
               if (item.item_type === "folder") {
-                return <FolderEdit item={item} />;
+                return <FolderEdit key={item.item_id} item={item} />;
               }
             })}
           </tbody>
