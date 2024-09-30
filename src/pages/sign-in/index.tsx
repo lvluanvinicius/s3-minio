@@ -11,14 +11,12 @@ interface AppConfig {
 }
 
 export function SignIn({ config }: AppConfig) {
-  const logoUri = `${config.s3_api_url}/${config.app_bucket}/${config.app_logo}`;
-
   return (
     <div className="fixed left-[50%] top-[50%] flex h-[28rem] w-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 rounded-xl bg-primary text-white shadow-md shadow-primary">
       <div className="flex h-[6rem] w-full flex-col items-center justify-center border-b border-white/50">
         <div className="w-[3.5rem]">
           <Image
-            src={logoUri}
+            src={`/uploads/${config.app_logo}`}
             alt={config.app_name}
             width={1000}
             height={1000}

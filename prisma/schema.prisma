@@ -116,13 +116,19 @@ model AppConfig {
   @@map("app_config")
 }
 
+enum HistoriesType {
+  download
+  upload
+}
+
 model Histories {
-  id      String @id @default(cuid())
+  id      String        @id @default(cuid())
   clock   BigInt
   ns      BigInt
   value   Float
   file_id String
-  File    Files  @relation(fields: [file_id], references: [id], onDelete: Cascade)
+  type    HistoriesType @default(upload)
+  File    Files         @relation(fields: [file_id], references: [id], onDelete: Cascade)
 
   @@map("histories")
 }

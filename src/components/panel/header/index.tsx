@@ -1,6 +1,6 @@
 import { getAppConfig } from "@/services/queries/app/app-config";
 import {
-  Avatar,
+  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -27,7 +27,7 @@ export function Header() {
       <div className="flex h-full w-[80%] items-center justify-between">
         <Link href={"/home"} className="flex h-full w-8 items-center gap-2">
           <Image
-            src={`${config.data.s3_api_url}/${config.data.app_bucket}/${config.data.app_logo}`}
+            src={`/uploads/${config.data.app_logo}`}
             alt={config.data.app_name}
             width={1000}
             height={1000}
@@ -53,6 +53,11 @@ export function Header() {
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="User Actions" variant="shadow">
+              <DropdownItem key={"nivel"}>
+                <Chip size="sm" variant="dot" color="success" radius="sm">
+                  Administrador
+                </Chip>
+              </DropdownItem>
               <DropdownItem key={"profile"} href="/profile">
                 Perfil
               </DropdownItem>

@@ -1,0 +1,5 @@
+.env.example
+.next
+.docker
+node_modules
+policies

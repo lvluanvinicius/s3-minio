@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isAuthenticated } from "@/libs/auth";
+import { FetchError } from "./services/app";
 console.log("teste");
 
 export const config = {
@@ -13,9 +14,15 @@ export const config = {
 };
 
 export async function middleware(request: NextRequest) {
-  return NextResponse.redirect(new URL("/", request.url));
-  // if (!isAuthenticated(request)) {
-  // }
+  try {
+    if (isAuthenticated(request)) {
+      return NextResponse.next();
+    }
 
-  // return NextResponse.next();
+    throw new FetchError("Sua sessão é inválida.", "APIError", 401)
+  } catch (error) {
+    if (error instanceof FetchError) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
 }

@@ -4,10 +4,11 @@ import { prisma } from "@/libs/prisma";
 import formidable from "formidable";
 import { minioMain } from "@/libs/minio";
 import { randomUUID } from "crypto";
+import { getCurrentTimeInZone } from "@/utils/formatter";
 
 // Função auxiliar para lidar com o parsing do arquivo usando formidable
 const parseForm = (
-  req: NextApiRequest
+  req: NextApiRequest,
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
   const form = formidable(); // Atualizado para a nova versão
 
@@ -104,6 +105,20 @@ export async function upload(req: NextApiRequest, res: NextApiResponse) {
     // Salvar arquivo.
     const fileSave = await prisma.files.create({
       data,
+    });
+
+    // Recuperando time.
+    const currentTime = getCurrentTimeInZone("number") as number;
+
+    // Salvando histórico.
+    await prisma.histories.create({
+      data: {
+        ns: currentTime % 1000,
+        value: fileSave.file_size,
+        file_id: fileSave.id,
+        clock: currentTime,
+        type: 'upload'
+      },
     });
 
     return res.status(200).json({
