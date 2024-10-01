@@ -7,19 +7,76 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { deleteFile } from "@/services/queries/files/delete-file";
+import { FetchError } from "@/services/app";
+import { queryClient } from "@/services/queryClient";
 
 export function FileDelete({ fileId }: { fileId: string }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [isDelete, setIsDelete] = useState(false);
+
+  const { mutateAsync: deleteFileFunc } = useMutation({
+    mutationFn: () => deleteFile({ file_id: fileId }),
+  });
 
   const handleDelete = useCallback(async () => {
     try {
-      toast.success(fileId);
-      onClose();
+      setIsDelete(true);
+      const del = await deleteFileFunc();
+
+      if (del.status) {
+        const cachedFolders = queryClient.getQueriesData<
+          ApiResponse<{ result: FilesFolders[] }>
+        >({
+          queryKey: ["files-folders"],
+        });
+
+        cachedFolders.forEach(([cacheKey, cacheData]) => {
+          if (!cacheData) {
+            return null;
+          }
+
+          queryClient.setQueryData<ApiResponse<{ result: FilesFolders[] }>>(
+            cacheKey,
+            {
+              ...cacheData,
+              data: {
+                result: cacheData.data.result.filter(
+                  (d) => d.item_id !== fileId,
+                ),
+              },
+            },
+          );
+        });
+
+        toast.success(del.message);
+        setIsDelete(false);
+        onClose();
+        return;
+      }
+
+      setIsDelete(false);
+
+      throw new Error(del.message);
     } catch (error) {
-      console.log(error);
+      setIsDelete(false);
+
+      if (error instanceof FetchError) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.error("Houve um erro desconhecido ao tentar excluír o arquivo.");
     }
   }, [fileId]);
 
@@ -33,16 +90,6 @@ export function FileDelete({ fileId }: { fileId: string }) {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         radius="sm"
-        classNames={
-          {
-            //   body: "py-6",
-            //   backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-            //   base: "border-[#292f46] bg-[#19172c] dark:bg-[#19172c] text-[#a8b0d3]",
-            //   header: "border-b-[1px] border-[#292f46]",
-            //   footer: "border-t-[1px] border-[#292f46]",
-            //   closeButton: "hover:bg-white/5 active:bg-white/10",
-          }
-        }
       >
         <ModalContent>
           <ModalBody>
@@ -53,7 +100,14 @@ export function FileDelete({ fileId }: { fileId: string }) {
               Cancelar
             </Button>
             <Button className="bg-primary text-white" onPress={handleDelete}>
-              Confirmar
+              {isDelete ? (
+                <>
+                  <Spinner size="sm" color="current" />
+                  Aguarde...
+                </>
+              ) : (
+                "Confirmar"
+              )}
             </Button>
           </ModalFooter>
         </ModalContent>

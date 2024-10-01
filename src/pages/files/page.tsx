@@ -4,7 +4,6 @@ import { Paginate } from "@/components/panel/paginate";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DisplayCounts } from "@/components/panel/display-counts";
-
 import { UseLayout } from "../_layouts/use-layout";
 import { FolderEdit } from "./folder-edit";
 import { FileDelete } from "./file-delete";
@@ -101,8 +100,8 @@ export function Page() {
                       </td>
                       <td className="whitespace-nowrap py-2">
                         <div className="flex items-center justify-end">
-                          <FileDelete fileId={item.item_id} />
                           <FileDownload fileId={item.item_id} />
+                          <FileDelete fileId={item.item_id} />
                         </div>
                       </td>
                     </tr>

@@ -21,6 +21,7 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
       select: {
         id: true,
         file_name: true,
+        file_hash: true,
         Buckets: {
           select: { bucket_name: true },
         },
@@ -35,7 +36,7 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
     if (existsFile.Buckets) {
       await destroyObject({
         bucket_name: existsFile.Buckets.bucket_name,
-        file_name: existsFile.file_name,
+        file_name: existsFile.file_hash,
       });
     }
 

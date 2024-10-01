@@ -63,6 +63,8 @@ export function FolderDelete({ foldId }: { foldId: string }) {
       setIsDelete(false);
       throw new Error("Houve um erro ao tentar excluír a pasta.");
     } catch (error) {
+      setIsDelete(false);
+
       if (error instanceof FetchError) {
         toast.error(error.message);
         return;

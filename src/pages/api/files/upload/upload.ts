@@ -57,10 +57,11 @@ export async function upload(req: NextApiRequest, res: NextApiResponse) {
       throw new Error("Nenhum arquivo foi enviado");
     }
 
+    const fileHash = btoa(`${randomUUID()}`);
+
     // Configurar os parâmetros para o upload no MinIO
     const bucketName = bucketExists.bucket_name; // Substitua pelo nome do seu bucket
-    const objectName =
-      `${Date.now()}-${file.originalFilename}` || `undefined_${Date.now()}`; // Nome do arquivo no bucket
+    const objectName = fileHash || `undefined_${Date.now()}`; // Nome do arquivo no bucket
     const filePath = file.filepath; // Caminho do arquivo local gerado pelo formidable
 
     // Enviar o arquivo diretamente para o MinIO com fPutObject
@@ -72,14 +73,16 @@ export async function upload(req: NextApiRequest, res: NextApiResponse) {
 
     // Salvar arquivo juntamente a pasta se for informada.
     const data = {
-      file_name: objectName,
-      file_hash: btoa(`${randomUUID()}`),
+      file_name: file.originalFilename,
+      file_hash: fileHash,
       bucket_id: bucket_id[0],
       user_id: req.user_id,
       file_size: file.size,
+      file_format: "",
     } as {
       file_name: string;
       file_hash: string;
+      file_format: string;
       bucket_id: string;
       folder_id: string | null;
       user_id: string;
@@ -117,7 +120,7 @@ export async function upload(req: NextApiRequest, res: NextApiResponse) {
         value: fileSave.file_size,
         file_id: fileSave.id,
         clock: currentTime,
-        type: 'upload'
+        type: "upload",
       },
     });
 

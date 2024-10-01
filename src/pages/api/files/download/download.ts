@@ -18,6 +18,7 @@ export async function download(req: NextApiRequest, res: NextApiResponse) {
       select: {
         id: true,
         file_name: true,
+        file_hash: true,
         Buckets: {
           select: {
             bucket_name: true,
@@ -39,7 +40,7 @@ export async function download(req: NextApiRequest, res: NextApiResponse) {
     const minioClient = await minioMain();
 
     // Buscar o objeto no bucket MinIO e fazer o streaming diretamente para o cliente
-    const stream = await minioClient.getObject(bucket_name, file.file_name);
+    const stream = await minioClient.getObject(bucket_name, file.file_hash);
 
     // Definir cabeçalhos apropriados para o download
     res.setHeader(

@@ -127,7 +127,6 @@ export async function files(req: NextApiRequest, res: NextApiResponse) {
         item_folder_id: null,
       });
     });
-    console.log(files);
 
     return res.status(200).json({
       status: true,
