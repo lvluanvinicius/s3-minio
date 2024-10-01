@@ -17,12 +17,14 @@ export function apiAuth(handler: NextApiHandler) {
 
       // Valida o valor de Accept.
       if (headers.accept !== "application/json") {
-        throw new Error(
-          "O  'Accept' deve ser informado como 'application/json'.",
-          {
-            cause: "ERROR_INCORRECT_VALUES_HEADERS",
-          },
-        );
+        if (headers.accept !== "application/octet-stream") {
+          throw new Error(
+            "O  'Accept' deve ser informado como 'application/json' ou 'application/octet-stream'.",
+            {
+              cause: "ERROR_INCORRECT_VALUES_HEADERS",
+            },
+          );
+        }
       }
 
       // Recuperando data atual.

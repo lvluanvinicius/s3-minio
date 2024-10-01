@@ -50,6 +50,10 @@ export async function download(req: NextApiRequest, res: NextApiResponse) {
 
     // Fazer o pipe do stream diretamente para a resposta
     stream.pipe(res);
+
+    return res.status(200).json({
+      status: true,
+    });
   } catch (error) {
     if (error instanceof Error) {
       return apiHandlerErros(error, res);
