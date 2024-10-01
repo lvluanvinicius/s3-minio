@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { apiAuth } from "@/middlewares/api-auth";
 import { prisma } from "@/libs/prisma";
 import { store } from "./store";
+import { update } from "./update";
 import { folders } from "./folders";
 import { destroy } from "./destroy";
 
@@ -14,6 +15,9 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
 
       case "POST":
         return store(req, res);
+
+      case "PUT":
+        return update(req, res);
 
       case "DELETE":
         return destroy(req, res);

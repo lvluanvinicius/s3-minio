@@ -6,34 +6,106 @@ import { FaEdit, FaFolder } from "react-icons/fa";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { IoIosSave } from "react-icons/io";
 import { FolderDelete } from "../folder-delete";
+import { useRouter } from "next/router";
+import { transformSearchParams } from "@/utils/urls";
+import { useMutation } from "@tanstack/react-query";
+import { updateFolder } from "@/services/queries/folders/update-folder";
+import { toast } from "sonner";
+import { FetchError } from "@/services/app";
+import { queryClient } from "@/services/queryClient";
 
 interface FolderEdit {
-  item: {
-    item_id: string;
-    item_name: string;
-    item_type: string;
-    item_created_at: string;
-    item_updated_at: string;
-    item_size: number | null;
-    item_total_files: number | null;
-    item_owner: string;
-  };
+  item: FilesFolders;
 }
 
 export function FolderEdit({ item }: FolderEdit) {
+  const router = useRouter();
   const [edit, setEdit] = useState(false);
   const [valueName, setValueName] = useState(item.item_name);
 
-  const updateFolder = useCallback(
+  const { mutateAsync: updateFunc } = useMutation({
+    mutationFn: () =>
+      updateFolder({
+        folder_name: valueName,
+        folder_id: item.item_id,
+      }),
+  });
+
+  const handleChangeFolder = useCallback(
+    (folder: string | null) => {
+      if (!folder) {
+        delete router.query.folder_id;
+      }
+
+      router.query.folder_id = folder as string;
+
+      const queryParams = transformSearchParams(router.query);
+
+      router.push({
+        pathname: router.pathname,
+        query: queryParams,
+      });
+    },
+    [router],
+  );
+
+  const handlerUpdateFolder = useCallback(
     async function () {
       try {
         if (valueName === "" || !valueName) {
           throw new Error("Nenhum valor foi informado para o nome da pasta.");
         }
 
-        setEdit(false);
+        // Enviar alterações.
+        const response = await updateFunc();
+
+        if (response && response.status) {
+          setEdit(false);
+          toast.success(response.message);
+
+          const cachedData = queryClient.getQueriesData<
+            ApiResponse<{ result: FilesFolders[] }>
+          >({
+            queryKey: ["files-folders"],
+          });
+
+          cachedData.forEach(([cacheKey, cachedData]) => {
+            if (!cachedData) {
+              return null;
+            }
+
+            queryClient.setQueryData<ApiResponse<{ result: FilesFolders[] }>>(
+              cacheKey,
+              {
+                ...cachedData,
+                data: {
+                  result: cachedData.data.result.map((d) => {
+                    if (d.item_id === item.item_id) {
+                      return { ...d, item_name: valueName };
+                    }
+
+                    return d;
+                  }),
+                },
+              },
+            );
+          });
+
+          return;
+        }
       } catch (error) {
-        console.log(error);
+
+        if (error instanceof FetchError) {
+          toast.error(error.message);
+          return;
+        }
+
+        if (error instanceof Error) {
+          toast.error(error.message);
+          return;
+        }
+
+        toast.error("Houve um erro desconhecido ao tentar atualizar a pasta.");
       }
     },
     [valueName, setEdit],
@@ -49,10 +121,13 @@ export function FolderEdit({ item }: FolderEdit) {
             startContent={<FaFolder size={20} color="gray" />}
           />
         ) : (
-          <div className="flex gap-1 font-bold">
+          <button
+            className="flex gap-1 border-black font-bold hover:border-b"
+            onClick={() => handleChangeFolder(item.item_id)}
+          >
             <FaFolder size={20} color="gray" />
-            {item.item_name}
-          </div>
+            {item.item_name}/
+          </button>
         )}
       </td>
       <td className="whitespace-nowrap py-2">
@@ -73,7 +148,7 @@ export function FolderEdit({ item }: FolderEdit) {
                 variant="ghost"
                 className=""
                 size="sm"
-                onPress={updateFolder}
+                onPress={handlerUpdateFolder}
               >
                 <IoIosSave size={16} />
               </Button>

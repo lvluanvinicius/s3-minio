@@ -14,7 +14,7 @@ interface DataSession {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   try {
     // Validando metodo.
@@ -40,11 +40,10 @@ export default async function handler(
     if (headers["user-agent"]) {
       data.user_agent = headers["user-agent"] as string;
     }
-
     // Recupera o token do navegador e valida se foi expirado.
-    if (cookies["_sort_app.webtoken"]) {
+    if (cookies["_s3_minio_app.webtoken"]) {
       // Recuperando string.
-      const token = cookies["_sort_app.webtoken"];
+      const token = cookies["_s3_minio_app.webtoken"];
 
       // Recuperar token existente.
       const sess = await prisma.session.findUnique({

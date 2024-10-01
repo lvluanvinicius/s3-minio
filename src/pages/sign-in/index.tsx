@@ -1,21 +1,15 @@
 import Image from "next/image";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Spinner } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { FetchError, post } from "@/services/app";
 import { toast } from "sonner";
 import { useRouter } from "next/router";
-
-interface AppConfig {
-  config: {
-    app_bucket: string;
-    app_name: string;
-    app_logo: string;
-    s3_api_url: string;
-  };
-}
+import { getAppConfig } from "@/services/queries/app/app-config";
+import { useQuery } from "@tanstack/react-query";
+import { SkeletonSignIn } from "./skeleton";
 
 const signInSchema = z.object({
   username: z.string().min(1, "Informe o nome de usuário."),
@@ -24,8 +18,13 @@ const signInSchema = z.object({
 
 type SignInType = z.infer<typeof signInSchema>;
 
-export function SignIn({ config }: AppConfig) {
+export function SignIn() {
   const router = useRouter();
+
+  const { data: config } = useQuery({
+    queryKey: ["app-header-settings"],
+    queryFn: getAppConfig,
+  });
 
   const {
     handleSubmit,
@@ -68,17 +67,17 @@ export function SignIn({ config }: AppConfig) {
     [router],
   );
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
+  if (!config) {
+    return <SkeletonSignIn />;
+  }
 
   return (
     <div className="fixed left-[50%] top-[50%] flex h-[28rem] w-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 rounded-xl bg-primary text-white shadow-md shadow-primary">
       <div className="flex h-[6rem] w-full flex-col items-center justify-center border-b border-white/50">
         <div className="w-[3.5rem]">
           <Image
-            src={`/uploads/${config.app_logo}`}
-            alt={config.app_name}
+            src={`/uploads/${config.data.app_logo}`}
+            alt={config.data.app_name}
             width={1000}
             height={1000}
           />
@@ -91,7 +90,7 @@ export function SignIn({ config }: AppConfig) {
 
       <form
         onSubmit={handleSubmit(handleSignIn)}
-        className="flex flex-col gap-4 px-12"
+        className="flex flex-col gap-4 px-12 text-white"
       >
         <Input
           variant="bordered"
@@ -125,7 +124,14 @@ export function SignIn({ config }: AppConfig) {
           className="text-white disabled:bg-secondary"
           disabled={isSubmitting}
         >
-          Entrar
+          {isSubmitting ? (
+            <>
+              <Spinner size="sm" color="current" />
+              <span>Aguarde...</span>
+            </>
+          ) : (
+            "Entrar"
+          )}
         </Button>
       </form>
 

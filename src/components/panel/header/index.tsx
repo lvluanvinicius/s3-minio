@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { HeaderSkeleton } from "./skeleton";
+import { Helmet } from "react-helmet-async";
 
 export function Header() {
   const { data: config } = useQuery({
@@ -24,6 +25,7 @@ export function Header() {
 
   return (
     <header className="flex h-[4rem] w-full items-center justify-center bg-primary text-white">
+      <Helmet titleTemplate={`${config.data.app_name} | %s`} />
       <div className="flex h-full w-[80%] items-center justify-between">
         <Link href={"/home"} className="flex h-full w-8 items-center gap-2">
           <Image
