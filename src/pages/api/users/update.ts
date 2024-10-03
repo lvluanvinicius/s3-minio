@@ -49,6 +49,8 @@ export async function update(req: NextApiRequest, res: NextApiResponse) {
     if (data.password) {
       // Convertendo password para bcrypt.
       data.password = await hashMake(req.body.password);
+    } else {
+      delete data.password;
     }
 
     // Recupera a data de atualização.

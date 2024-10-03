@@ -25,9 +25,15 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
 
     if (user_id === req.user_id) {
       throw new Error(
-        "Você não pode excluír seu usuário, somente através do encerramento da sua conta em seu perfil."
+        "Você não pode excluír seu usuário, somente através do encerramento da sua conta em seu perfil.",
       );
     }
+
+    await prisma.user.delete({
+      where: {
+        id: user_id as string,
+      },
+    });
 
     return res.status(200).json({
       status: true,

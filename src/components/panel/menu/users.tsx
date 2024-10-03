@@ -16,9 +16,6 @@ export function Users() {
         <DropdownItem as={Link} key="list" href="/users">
           Usuários
         </DropdownItem>
-        <DropdownItem as={Link} key="new" href="/users/create">
-          + Novo Usuário
-        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

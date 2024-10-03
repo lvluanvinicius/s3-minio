@@ -3,35 +3,20 @@ import { UseLayout } from "../_layouts/use-layout";
 import { Paginate } from "@/components/panel/paginate";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import { getUsers } from "@/services/queries/users/get-users";
+import { Update } from "./update";
+import { UserDelete } from "./user-delete";
+import { Create } from "./create";
 
 export function Page() {
-  const rows = [
-    {
-      id: "cm1ex8ims0000104nx4fiab55",
-      name: "Luan Santos",
-      email: "lvluansantos@gmail.com",
-      username: "luan",
-      created_at: "2024-09-23T11:25:43.636Z",
-      updated_at: "2024-09-23T11:25:43.636Z",
-    },
-    {
-      id: "cm1fj9v3w00068yj2gkvy89v0",
-      name: "Fulano Irmão do Siclano",
-      email: "flano@gmail.com",
-      username: "fulano",
-      created_at: "2024-09-23T21:42:38.013Z",
-      updated_at: "2024-09-23T21:42:38.013Z",
-    },
-    {
-      id: "cm1gwj71t0000f7m1fqw1wzow",
-      name: "Administrador Padrão",
-      email: "ti@grupocednet.com.br",
-      username: "admin",
-      created_at: "2024-09-24T20:41:34.577Z",
-      updated_at: "2024-09-24T20:41:34.577Z",
-    },
-  ];
+  const router = useRouter();
+
+  const { data: users } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getUsers({ query: router.query }),
+  });
 
   return (
     <UseLayout>
@@ -45,9 +30,7 @@ export function Page() {
           <Button radius="sm" className="rounded-sm shadow-sm shadow-black/20">
             Buscar
           </Button>
-          <Button radius="sm" className="rounded-sm shadow-sm shadow-black/20">
-            + Novo
-          </Button>
+          <Create />
         </div>
 
         <table className="table w-full">
@@ -62,37 +45,38 @@ export function Page() {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {rows.map((conf) => {
-              return (
-                <tr className="hover:bg-secondary/10">
-                  <td className="whitespace-nowrap py-2 pl-2">{conf.name}</td>
-                  <td className="whitespace-nowrap py-2">{conf.email}</td>
-                  <td className="whitespace-nowrap py-2">@{conf.username}</td>
-                  <td className="whitespace-nowrap py-2">
-                    {formatDistanceToNow(conf.created_at, {
-                      addSuffix: true,
-                      locale: ptBR,
-                    })}
-                  </td>
-                  <td className="whitespace-nowrap py-2">
-                    {formatDistanceToNow(conf.updated_at, {
-                      addSuffix: true,
-                      locale: ptBR,
-                    })}
-                  </td>
-                  <td className="min-w-[10rem] whitespace-nowrap py-2">
-                    <div className="flex w-full items-center justify-end">
-                      <Button variant="ghost" className="" size="sm">
-                        <FaEdit size={16} />
-                      </Button>
-                      <Button variant="ghost" className="" size="sm">
-                        <FaRegTrashAlt size={16} />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            {users ? (
+              users.data.map((user) => {
+                return (
+                  <tr key={user.id} className="hover:bg-secondary/10">
+                    <td className="whitespace-nowrap py-2 pl-2">{user.name}</td>
+                    <td className="whitespace-nowrap py-2">{user.email}</td>
+                    <td className="whitespace-nowrap py-2">@{user.username}</td>
+                    <td className="whitespace-nowrap py-2">
+                      {formatDistanceToNow(user.created_at, {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap py-2">
+                      {formatDistanceToNow(user.updated_at, {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
+                    </td>
+                    <td className="min-w-[10rem] whitespace-nowrap py-2">
+                      <div className="flex w-full items-center justify-end">
+                        <Update user={user} />
+
+                        <UserDelete user_id={user.id} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <></>
+            )}
           </tbody>
         </table>
         <Paginate />
