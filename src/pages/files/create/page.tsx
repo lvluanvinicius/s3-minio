@@ -1,13 +1,12 @@
+import { useEffect, useState } from "react";
 import Uppy from "@uppy/core";
 import XHRUpload from "@uppy/xhr-upload";
 import { Dashboard } from "@uppy/react";
-
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getAppConfig } from "@/services/queries/app/app-config";
 
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
-import { useQuery } from "@tanstack/react-query";
-import { getAppConfig } from "@/services/queries/app/app-config";
 
 export function Page() {
   const {
@@ -45,7 +44,9 @@ export function Page() {
         });
       }
 
-      setUppyInstance(uppy);
+      if (uppy) {
+        setUppyInstance(uppy);
+      }
 
       // Cleanup ao desmontar o componente
       return () => {

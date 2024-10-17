@@ -25,5 +25,5 @@ export function Logs() {
         </ul>
       </div>
     </div>
-  );
+  )
 }

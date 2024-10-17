@@ -3,8 +3,8 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-} from "@nextui-org/react";
-import Link from "next/link";
+} from '@nextui-org/react'
+import Link from 'next/link'
 
 export function Users() {
   return (
@@ -18,5 +18,5 @@ export function Users() {
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
-  );
+  )
 }

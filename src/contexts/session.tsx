@@ -5,125 +5,131 @@ import {
   useContext,
   useEffect,
   useState,
-} from "react";
-import nookies from "nookies";
-import { FetchError, get, post } from "@/services/app";
-import { useRouter } from "next/router";
-import { toast } from "sonner";
+} from 'react'
+import nookies from 'nookies'
+import { FetchError, get, post } from '@/services/app'
+import { useRouter } from 'next/router'
+import { toast } from 'sonner'
 
 interface SessionContextProps {
-  isAuthenticated: boolean;
-  user: UserInterface | null;
+  isAuthenticated: boolean
+  user: UserInterface | null
   signIn: (
     username: string,
     password: string,
-  ) => Promise<PrismaActionResponse<[]>>;
-  isLogged: () => Promise<boolean | undefined>;
-  notLogged: () => Promise<boolean | undefined>;
+  ) => Promise<{
+    access_token: string
+    session_token: string
+  }>
+  isLogged: () => Promise<boolean | undefined>
+  notLogged: () => Promise<boolean | undefined>
 }
 
-export const SessionContext = createContext({} as SessionContextProps);
+export const SessionContext = createContext({} as SessionContextProps)
 
 interface SessionProvider {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function SessionProvider({ children }: SessionProvider) {
-  const router = useRouter();
-  const [user, setUser] = useState<UserInterface | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter()
+  const [user, setUser] = useState<UserInterface | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
   // Recupera o token do navegador.
   const webToken = useCallback(async () => {
-    const response = await fetch("/api/auth/web-token");
-    const responseJson = (await response.json()) as { session_token?: string };
+    const response = await fetch('/api/auth/web-token')
+    const responseJson = (await response.json()) as { session_token?: string }
 
     if (responseJson && responseJson.session_token) {
-      nookies.destroy(null, "_s3_minio_app.webtoken", {
-        path: "/",
-      });
-      nookies.set(null, "_s3_minio_app.webtoken", responseJson.session_token, {
+      nookies.destroy(null, '_s3_minio_app.webtoken', {
+        path: '/',
+      })
+      nookies.set(null, '_s3_minio_app.webtoken', responseJson.session_token, {
         maxAge: 60 * 60 * 60,
-        path: "/",
-      });
+        path: '/',
+      })
     }
-  }, []);
+  }, [])
 
   // Efetua o carregamento dos dados de usuários.
   const userLoading = useCallback(async () => {
     try {
-      const response = await get<UserInterface>("/api/profile", {
+      const response = await get<UserInterface>('/api/profile', {
         headers: {
-          Accept: "application/json",
+          Accept: 'application/json',
         },
-      });
+      })
 
       if (response.status) {
-        setUser(response.data);
-        setIsAuthenticated(true);
-        return;
+        setUser(response.data)
+        setIsAuthenticated(true)
+        return
       }
 
-      setUser(null);
-      setIsAuthenticated(false);
+      setUser(null)
+      setIsAuthenticated(false)
     } catch (error) {
       if (error instanceof FetchError) {
         if (error.status === 401) {
-          return router.push("/");
+          return router.push('/')
         }
 
         // return toast.error(error.message);
-        return;
+        return
       }
 
       if (error instanceof Error) {
-        return toast.error(error.message);
+        return toast.error(error.message)
       }
 
       toast.error(
-        "Houve um erro desconhecido ao recuperar o usuário de sessão.",
-      );
+        'Houve um erro desconhecido ao recuperar o usuário de sessão.',
+      )
     }
-  }, [setUser, setIsAuthenticated, router]);
+  }, [setUser, setIsAuthenticated, router])
 
   const signIn = useCallback(async (username: string, password: string) => {
-    const response = await post("/api", {
+    const response = await post<{
+      access_token: string
+      session_token: string
+    }>('/api', {
       password,
       username,
-    });
+    })
 
-    return response;
-  }, []);
+    return response.data
+  }, [])
 
   // Encaminha o usuário para a conta se já estiver logado.
   const isLogged = useCallback(async () => {
     if (isAuthenticated) {
-      return router.replace("/account");
+      return router.replace('/account')
     }
-  }, [router, isAuthenticated]);
+  }, [router, isAuthenticated])
 
   // Valida se o usuário não está logado.
   const notLogged = useCallback(async () => {
     if (!isAuthenticated) {
-      return router.replace("/");
+      return router.replace('/')
     }
-  }, [router, isAuthenticated, user]);
+  }, [router, isAuthenticated])
 
   useEffect(() => {
-    webToken();
-  }, [webToken]);
+    webToken()
+  }, [webToken])
 
   useEffect(() => {
-    userLoading();
-  }, [userLoading]);
+    userLoading()
+  }, [userLoading])
 
   useEffect(() => {
     if (user) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(true)
     } else {
-      setIsAuthenticated(false);
+      setIsAuthenticated(false)
     }
-  }, [user]);
+  }, [user])
 
   return (
     <SessionContext.Provider
@@ -131,9 +137,9 @@ export function SessionProvider({ children }: SessionProvider) {
     >
       {children}
     </SessionContext.Provider>
-  );
+  )
 }
 
 export const useSession = () => {
-  return useContext(SessionContext);
-};
+  return useContext(SessionContext)
+}

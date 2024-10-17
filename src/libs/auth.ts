@@ -1,47 +1,43 @@
-import { FetchError, get } from "@/services/app";
-import { NextResponse } from "next/server";
-import { toast } from "sonner";
+import { FetchError, get } from '@/services/app'
 
 export async function isAuthenticated(
   cookies: Partial<{
-    [key: string]: string;
+    [key: string]: string
   }>,
 ) {
   try {
-    for (let index in cookies) {
-      if (index === "_s3_minio_app.webtoken") {
-        const response = await get(
-          `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/user`,
-          {
-            headers: {
-              Accept: "application/json",
-              cookie: `${index}=${cookies[index]}`,
-            },
-          },
-        );
+    // Verifica diretamente se o cookie _s3_minio_app.webtoken existe
+    const webtoken = cookies['_s3_minio_app.webtoken']
 
-        return response.status;
-      }
-
-      throw new Error("Index de sessão não encontrado.");
+    if (!webtoken) {
+      throw new Error('Index de sessão não encontrado.')
     }
 
-    throw new Error(
-      "Houve um erro inesperado ao receber os valores dos cookies de sessão.",
-    );
+    // Faz a requisição se o cookie existir
+    const response = await get(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/user`,
+      {
+        headers: {
+          Accept: 'application/json',
+          cookie: `_s3_minio_app.webtoken=${webtoken}`,
+        },
+      },
+    )
+
+    return response.status
   } catch (error) {
     if (error instanceof FetchError) {
       if (error.status === 401) {
-        return false;
+        return false
       }
 
-      throw new Error(error.message);
+      throw new Error(error.message)
     }
 
     if (error instanceof Error) {
-      throw new Error(error.message);
+      throw new Error(error.message)
     }
 
-    throw new Error("Houve um erro inesperado ao tentar validar a sessão.");
+    throw new Error('Houve um erro inesperado ao tentar validar a sessão.')
   }
 }

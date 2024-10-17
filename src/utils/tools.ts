@@ -4,15 +4,15 @@
  * @returns
  */
 export function sortKeys(keys: string[]): string | null {
-  const totalKeys = keys.length; // Recupera o total de items.
+  const totalKeys = keys.length // Recupera o total de items.
 
   if (totalKeys <= 0) {
-    return null;
+    return null
   }
 
-  const sortIndex = Math.floor(Math.random() * totalKeys);
+  const sortIndex = Math.floor(Math.random() * totalKeys)
 
-  return keys[sortIndex];
+  return keys[sortIndex]
 }
 
 /**
@@ -21,20 +21,20 @@ export function sortKeys(keys: string[]): string | null {
  * @returns
  */
 export function removeDuplicated(keys: string[]): string[] {
-  const keysDuplicated: { [key: string]: boolean } = {};
-  const result: string[] = [];
+  const keysDuplicated: { [key: string]: boolean } = {}
+  const result: string[] = []
 
   for (const key of keys) {
-    const trimmedKey = key.trim(); // Remove espaços em branco no início e no fim
+    const trimmedKey = key.trim() // Remove espaços em branco no início e no fim
 
     // Verifica se a string não está vazia após o trim
     if (trimmedKey && !keysDuplicated[trimmedKey]) {
-      keysDuplicated[trimmedKey] = true;
-      result.push(trimmedKey);
+      keysDuplicated[trimmedKey] = true
+      result.push(trimmedKey)
     }
   }
 
-  return result;
+  return result
 }
 
 /**
@@ -44,10 +44,10 @@ export function removeDuplicated(keys: string[]): string[] {
  * @returns
  */
 export function arrayNumberRandom(min: number, max: number): number[] {
-  const numbers = [];
+  const numbers = []
   for (let index = min; index < max; index++) {
-    numbers.push(index);
+    numbers.push(index)
   }
 
-  return numbers;
+  return numbers
 }

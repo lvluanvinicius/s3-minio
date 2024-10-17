@@ -1,4 +1,4 @@
-import { Skeleton } from "@nextui-org/react";
+import { Skeleton } from '@nextui-org/react'
 
 export function HeaderSkeleton() {
   return (
@@ -24,5 +24,5 @@ export function HeaderSkeleton() {
         </div>
       </div>
     </header>
-  );
+  )
 }

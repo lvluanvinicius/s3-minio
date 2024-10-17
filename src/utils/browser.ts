@@ -1,6 +1,6 @@
-import { parseCookies } from "nookies";
-import { IncomingMessage } from "http";
-import { NextApiRequest } from "next";
+import { parseCookies } from 'nookies'
+import { IncomingMessage } from 'http'
+import { NextApiRequest } from 'next'
 
 /**
  * Recupera o valor de um cookie específico pelo nome.
@@ -11,13 +11,13 @@ import { NextApiRequest } from "next";
  */
 export function getCookieValue(
   ctx: { req?: IncomingMessage } | null,
-  cookieName: string
+  cookieName: string,
 ): string | undefined {
   // Usa parseCookies para obter todos os cookies no contexto fornecido
-  const cookies = parseCookies(ctx);
+  const cookies = parseCookies(ctx)
 
   // Retorna o valor do cookie específico ou `undefined` se não existir
-  return cookies[cookieName];
+  return cookies[cookieName]
 }
 
 /**
@@ -29,11 +29,11 @@ export function getCookieValue(
  */
 export function getCookieValueFromRequest(
   req: NextApiRequest | IncomingMessage,
-  cookieName: string
+  cookieName: string,
 ): string | undefined {
   // Usa parseCookies para obter todos os cookies do objeto de requisição
-  const cookies = parseCookies({ req });
+  const cookies = parseCookies({ req })
 
   // Retorna o valor do cookie específico ou `undefined` se não existir
-  return cookies[cookieName];
+  return cookies[cookieName]
 }

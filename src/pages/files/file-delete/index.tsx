@@ -1,4 +1,4 @@
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt } from 'react-icons/fa'
 import {
   Modal,
   ModalContent,
@@ -8,37 +8,37 @@ import {
   Button,
   useDisclosure,
   Spinner,
-} from "@nextui-org/react";
-import { useCallback, useState } from "react";
-import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
-import { deleteFile } from "@/services/queries/files/delete-file";
-import { FetchError } from "@/services/app";
-import { queryClient } from "@/services/queryClient";
+} from '@nextui-org/react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
+import { useMutation } from '@tanstack/react-query'
+import { deleteFile } from '@/services/queries/files/delete-file'
+import { FetchError } from '@/services/app'
+import { queryClient } from '@/services/queryClient'
 
 export function FileDelete({ fileId }: { fileId: string }) {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isDelete, setIsDelete] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const [isDelete, setIsDelete] = useState(false)
 
   const { mutateAsync: deleteFileFunc } = useMutation({
     mutationFn: () => deleteFile({ file_id: fileId }),
-  });
+  })
 
   const handleDelete = useCallback(async () => {
     try {
-      setIsDelete(true);
-      const del = await deleteFileFunc();
+      setIsDelete(true)
+      const del = await deleteFileFunc()
 
       if (del.status) {
         const cachedFolders = queryClient.getQueriesData<
           ApiResponse<{ result: FilesFolders[] }>
         >({
-          queryKey: ["files-folders"],
-        });
+          queryKey: ['files-folders'],
+        })
 
         cachedFolders.forEach(([cacheKey, cacheData]) => {
           if (!cacheData) {
-            return null;
+            return null
           }
 
           queryClient.setQueryData<ApiResponse<{ result: FilesFolders[] }>>(
@@ -51,34 +51,34 @@ export function FileDelete({ fileId }: { fileId: string }) {
                 ),
               },
             },
-          );
-        });
+          )
+        })
 
-        toast.success(del.message);
-        setIsDelete(false);
-        onClose();
-        return;
+        toast.success(del.message)
+        setIsDelete(false)
+        onClose()
+        return
       }
 
-      setIsDelete(false);
+      setIsDelete(false)
 
-      throw new Error(del.message);
+      throw new Error(del.message)
     } catch (error) {
-      setIsDelete(false);
+      setIsDelete(false)
 
       if (error instanceof FetchError) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
       if (error instanceof Error) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
-      toast.error("Houve um erro desconhecido ao tentar excluír o arquivo.");
+      toast.error('Houve um erro desconhecido ao tentar excluír o arquivo.')
     }
-  }, [fileId]);
+  }, [fileId, deleteFileFunc, onClose])
 
   return (
     <>
@@ -106,12 +106,12 @@ export function FileDelete({ fileId }: { fileId: string }) {
                   Aguarde...
                 </>
               ) : (
-                "Confirmar"
+                'Confirmar'
               )}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }

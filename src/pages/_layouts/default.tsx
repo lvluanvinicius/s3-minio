@@ -1,9 +1,9 @@
-import { Header } from "@/components/panel/header";
-import { Menu } from "@/components/panel/menu";
-import { ReactNode } from "react";
+import { Header } from '@/components/panel/header'
+import { Menu } from '@/components/panel/menu'
+import { ReactNode } from 'react'
 
 interface LayoutDefaultProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function LayoutDefault({ children }: LayoutDefaultProps) {
@@ -17,5 +17,5 @@ export function LayoutDefault({ children }: LayoutDefaultProps) {
         {children}
       </div>
     </div>
-  );
+  )
 }

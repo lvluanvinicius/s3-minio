@@ -1,9 +1,9 @@
-import { put } from "@/services/app";
-import { toast } from "sonner";
+import { put } from '@/services/app'
+import { toast } from 'sonner'
 
 interface UpdateFolder {
-  folder_name: string;
-  folder_id: string;
+  folder_name: string
+  folder_id: string
 }
 
 export async function updateFolder({ folder_name, folder_id }: UpdateFolder) {
@@ -14,14 +14,14 @@ export async function updateFolder({ folder_name, folder_id }: UpdateFolder) {
     },
     {
       headers: {
-        Accept: "application/json",
+        Accept: 'application/json',
       },
     },
-  );
+  )
 
   if (update.status) {
-    return update;
+    return update
   }
 
-  toast.error(update.message);
+  toast.error(update.message)
 }

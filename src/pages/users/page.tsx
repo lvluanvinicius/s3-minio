@@ -1,22 +1,22 @@
-import { Button, Input } from "@nextui-org/react";
-import { UseLayout } from "../_layouts/use-layout";
-import { Paginate } from "@/components/panel/paginate";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/services/queries/users/get-users";
-import { Update } from "./update";
-import { UserDelete } from "./user-delete";
-import { Create } from "./create";
+import { Button, Input } from '@nextui-org/react'
+import { UseLayout } from '../_layouts/use-layout'
+import { Paginate } from '@/components/panel/paginate'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { useRouter } from 'next/router'
+import { useQuery } from '@tanstack/react-query'
+import { getUsers } from '@/services/queries/users/get-users'
+import { Update } from './update'
+import { UserDelete } from './user-delete'
+import { Create } from './create'
 
 export function Page() {
-  const router = useRouter();
+  const router = useRouter()
 
   const { data: users } = useQuery({
-    queryKey: ["users"],
+    queryKey: ['users'],
     queryFn: () => getUsers({ query: router.query }),
-  });
+  })
 
   return (
     <UseLayout>
@@ -72,7 +72,7 @@ export function Page() {
                       </div>
                     </td>
                   </tr>
-                );
+                )
               })
             ) : (
               <></>
@@ -82,5 +82,5 @@ export function Page() {
         <Paginate />
       </div>
     </UseLayout>
-  );
+  )
 }

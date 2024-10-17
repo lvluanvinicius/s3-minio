@@ -1,4 +1,4 @@
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt } from 'react-icons/fa'
 import {
   Modal,
   ModalContent,
@@ -8,40 +8,40 @@ import {
   Button,
   useDisclosure,
   Spinner,
-} from "@nextui-org/react";
-import { useCallback, useState } from "react";
-import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
-import { deleteFolder } from "@/services/queries/folders/delete-folder";
-import { queryClient } from "@/services/queryClient";
-import { FetchError } from "@/services/app";
+} from '@nextui-org/react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
+import { useMutation } from '@tanstack/react-query'
+import { deleteFolder } from '@/services/queries/folders/delete-folder'
+import { queryClient } from '@/services/queryClient'
+import { FetchError } from '@/services/app'
 
 export function FolderDelete({ foldId }: { foldId: string }) {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isDelete, setIsDelete] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const [isDelete, setIsDelete] = useState(false)
 
   const { mutateAsync: deleteFolderFunc } = useMutation({
     mutationFn: () => deleteFolder({ folder_id: foldId }),
-  });
+  })
 
   const handleDelete = useCallback(async () => {
     try {
-      setIsDelete(true);
-      const response = await deleteFolderFunc();
+      setIsDelete(true)
+      const response = await deleteFolderFunc()
 
       if (response.status) {
-        toast.success(response.message);
-        onClose();
+        toast.success(response.message)
+        onClose()
 
         const cachedFolders = queryClient.getQueriesData<
           ApiResponse<{ result: FilesFolders[] }>
         >({
-          queryKey: ["files-folders"],
-        });
+          queryKey: ['files-folders'],
+        })
 
         cachedFolders.forEach(([cacheKey, cacheData]) => {
           if (!cacheData) {
-            return null;
+            return null
           }
 
           queryClient.setQueryData<ApiResponse<{ result: FilesFolders[] }>>(
@@ -54,30 +54,30 @@ export function FolderDelete({ foldId }: { foldId: string }) {
                 ),
               },
             },
-          );
-        });
-        setIsDelete(false);
-        return;
+          )
+        })
+        setIsDelete(false)
+        return
       }
 
-      setIsDelete(false);
-      throw new Error("Houve um erro ao tentar excluír a pasta.");
+      setIsDelete(false)
+      throw new Error('Houve um erro ao tentar excluír a pasta.')
     } catch (error) {
-      setIsDelete(false);
+      setIsDelete(false)
 
       if (error instanceof FetchError) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
       if (error instanceof Error) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
-      toast.error("Houve um erro desconhecido ao tentar excluír a pasta.");
+      toast.error('Houve um erro desconhecido ao tentar excluír a pasta.')
     }
-  }, [foldId]);
+  }, [foldId, deleteFolderFunc, onClose])
 
   return (
     <>
@@ -105,12 +105,12 @@ export function FolderDelete({ foldId }: { foldId: string }) {
                   Aguarde...
                 </>
               ) : (
-                "Confirmar"
+                'Confirmar'
               )}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }

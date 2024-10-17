@@ -1,7 +1,7 @@
-import { Home } from "./home";
-import { Settings } from "./settings";
-import { Users } from "./users";
-import { Files } from "./files";
+import { Home } from './home'
+import { Settings } from './settings'
+import { Users } from './users'
+import { Files } from './files'
 
 export function Menu() {
   return (
@@ -22,5 +22,5 @@ export function Menu() {
         <Settings />
       </div>
     </div>
-  );
+  )
 }

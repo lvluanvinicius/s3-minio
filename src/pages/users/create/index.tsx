@@ -1,6 +1,7 @@
-import { FetchError } from "@/services/app";
-import { createUser } from "@/services/queries/users/create-user";
-import { queryClient } from "@/services/queryClient";
+import { FetchError } from '@/services/app'
+import { createUser } from '@/services/queries/users/create-user'
+import { queryClient } from '@/services/queryClient'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
   Modal,
@@ -12,65 +13,64 @@ import {
   Button,
   Spinner,
   Input,
-} from "@nextui-org/react";
-import { useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+} from '@nextui-org/react'
+import { useCallback } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 const userSchema = z.object({
-  username: z.string().min(2, "Usuário é obrigatório."),
-  password: z.string().min(2, "Senha é obrigatória."),
-  name: z.string().min(2, "Nome é obrigatório."),
-  email: z.string().min(2, "E-mail é obrigatório.").email(),
-});
+  username: z.string().min(2, 'Usuário é obrigatório.'),
+  password: z.string().min(2, 'Senha é obrigatória.'),
+  name: z.string().min(2, 'Nome é obrigatório.'),
+  email: z.string().min(2, 'E-mail é obrigatório.').email(),
+})
 
-type UserType = z.infer<typeof userSchema>;
+type UserType = z.infer<typeof userSchema>
 
 export function Create() {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 
   const {
     formState: { isSubmitting },
     handleSubmit,
     register,
-  } = useForm<UserType>();
+  } = useForm<UserType>({
+    resolver: zodResolver(userSchema),
+  })
 
-  const handleCreate = useCallback(async function ({
-    email,
-    name,
-    username,
-    password,
-  }: UserType) {
-    try {
-      if (email === "" || name === "" || username === "" || password === "") {
-        throw new Error("Verifique todos os campos e tente novamente.");
+  const handleCreate = useCallback(
+    async function ({ email, name, username, password }: UserType) {
+      try {
+        if (email === '' || name === '' || username === '' || password === '') {
+          throw new Error('Verifique todos os campos e tente novamente.')
+        }
+
+        const response = await createUser({
+          user: { email, name, username, password },
+        })
+
+        if (response && response.status) {
+          queryClient.invalidateQueries({
+            queryKey: ['users'],
+          })
+          toast.success(response.message)
+          onClose()
+        }
+      } catch (error) {
+        if (error instanceof FetchError) {
+          return toast.error(error.message)
+        }
+
+        if (error instanceof Error) {
+          return toast.error(error.message)
+        }
+
+        return toast.error('Houve um erro desconhecido.')
       }
-
-      const response = await createUser({
-        user: { email, name, username, password },
-      });
-
-      if (response && response.status) {
-        queryClient.invalidateQueries({
-          queryKey: ["users"],
-        });
-        toast.success(response.message);
-        onClose();
-        return;
-      }
-    } catch (error) {
-      if (error instanceof FetchError) {
-        return toast.error(error.message);
-      }
-
-      if (error instanceof Error) {
-        return toast.error(error.message);
-      }
-
-      return toast.error("Houve um erro desconhecido.");
-    }
-  }, []);
+    },
+    [onClose],
+  )
 
   return (
     <>
@@ -84,7 +84,7 @@ export function Create() {
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        as={"form"}
+        as={'form'}
         onSubmit={handleSubmit(handleCreate)}
       >
         <ModalContent>
@@ -104,7 +104,7 @@ export function Create() {
               label="Nome"
               fullWidth
               placeholder="Informe o nome para o usuário"
-              {...register("name")}
+              {...register('name')}
             />
             <Input
               type="text"
@@ -116,7 +116,7 @@ export function Create() {
               label="E-mail"
               fullWidth
               placeholder="Informe o e-mail para o usuário"
-              {...register("email")}
+              {...register('email')}
             />
             <Input
               type="text"
@@ -128,7 +128,7 @@ export function Create() {
               label="Usuário"
               fullWidth
               placeholder="Informe o usuário para o usuário"
-              {...register("username")}
+              {...register('username')}
             />
             <Input
               type="password"
@@ -140,7 +140,7 @@ export function Create() {
               label="Senha"
               fullWidth
               placeholder="Informe o senha para o usuário"
-              {...register("password")}
+              {...register('password')}
             />
           </ModalBody>
           <ModalFooter className="">
@@ -151,12 +151,12 @@ export function Create() {
                   Aguarde...
                 </>
               ) : (
-                "Criar"
+                'Criar'
               )}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }

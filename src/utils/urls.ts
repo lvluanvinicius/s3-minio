@@ -3,16 +3,16 @@ import { ParsedUrlQuery } from 'querystring'
 export function transformSearchParams(query: ParsedUrlQuery) {
   const urlParams = new URLSearchParams()
 
-  Object.keys(query).map((key) => {
+  for (const key in query) {
     const value = query[key]
     if (value) {
       if (Array.isArray(value)) {
         urlParams.append(key, value.join(','))
       } else {
-        urlParams.append(key, value)
+        urlParams.append(key, value as string)
       }
     }
-  })
+  }
 
   return urlParams.toString()
 }

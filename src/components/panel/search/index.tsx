@@ -1,19 +1,19 @@
-import { transformSearchParams } from "@/utils/urls";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Spinner } from "@nextui-org/react";
-import { useRouter } from "next/router";
-import { useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { transformSearchParams } from '@/utils/urls'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, Input, Spinner } from '@nextui-org/react'
+import { useRouter } from 'next/router'
+import { useCallback } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 const schemaSearch = z.object({
   search: z.string(),
-});
+})
 
-type SearchType = z.infer<typeof schemaSearch>;
+type SearchType = z.infer<typeof schemaSearch>
 
 export function Search() {
-  const router = useRouter();
+  const router = useRouter()
 
   const {
     handleSubmit,
@@ -22,30 +22,33 @@ export function Search() {
   } = useForm<SearchType>({
     resolver: zodResolver(schemaSearch),
     defaultValues: router.query,
-  });
+  })
 
   const handlePageChange = useCallback(
     (search: string | null) => {
       if (!search) {
-        delete router.query.search;
+        delete router.query.search
       }
 
-      router.query.search = search as string;
+      router.query.search = search as string
 
-      const queryParams = transformSearchParams(router.query);
+      const queryParams = transformSearchParams(router.query)
 
       router.push({
         pathname: router.pathname,
         query: queryParams,
-      });
+      })
     },
 
     [router],
-  );
+  )
 
-  const handlerSearch = useCallback(function ({ search }: SearchType) {
-    handlePageChange(search);
-  }, []);
+  const handlerSearch = useCallback(
+    function ({ search }: SearchType) {
+      handlePageChange(search)
+    },
+    [handlePageChange],
+  )
 
   return (
     <form
@@ -56,7 +59,7 @@ export function Search() {
         placeholder="Buscar arquivo..."
         className="rounded-sm shadow-sm shadow-black/20"
         radius="sm"
-        {...register("search")}
+        {...register('search')}
       />
       <Button
         radius="sm"
@@ -64,8 +67,8 @@ export function Search() {
         disabled={isSubmitting}
         className="rounded-sm shadow-sm shadow-black/20"
       >
-        {isSubmitting ? <Spinner size="sm" /> : "Buscar"}
+        {isSubmitting ? <Spinner size="sm" /> : 'Buscar'}
       </Button>
     </form>
-  );
+  )
 }

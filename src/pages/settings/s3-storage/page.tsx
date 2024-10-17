@@ -1,17 +1,17 @@
-import { Paginate } from "@/components/panel/paginate";
-import { Button, Input } from "@nextui-org/react";
-import { ConfRow } from "./conf-row";
-import { getS3Config } from "@/services/queries/s3-config/get-config";
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
+import { Paginate } from '@/components/panel/paginate'
+import { Button, Input } from '@nextui-org/react'
+import { ConfRow } from './conf-row'
+import { getS3Config } from '@/services/queries/s3-config/get-config'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'next/router'
 
 export function Page() {
-  const router = useRouter();
+  const router = useRouter()
 
   const { data: appS3Settings } = useQuery({
-    queryKey: ["app-s3-settings", router.query],
+    queryKey: ['app-s3-settings', router.query],
     queryFn: () => getS3Config({ query: router.query }),
-  });
+  })
 
   return (
     <div className="flex h-full w-[80%] flex-col items-center justify-between gap-4 rounded-md border bg-content1 p-6 shadow-sm shadow-black/40">
@@ -40,7 +40,7 @@ export function Page() {
         <tbody className="text-sm">
           {appS3Settings ? (
             appS3Settings.data.map((conf) => {
-              return <ConfRow key={conf.id} conf={conf} />;
+              return <ConfRow key={conf.id} conf={conf} />
             })
           ) : (
             <></>
@@ -49,5 +49,5 @@ export function Page() {
       </table>
       <Paginate />
     </div>
-  );
+  )
 }

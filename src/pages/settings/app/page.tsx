@@ -1,17 +1,17 @@
-import { Paginate } from "@/components/panel/paginate";
-import { Button, Input } from "@nextui-org/react";
-import { ConfRow } from "./conf-row";
-import { useQuery } from "@tanstack/react-query";
-import { getConfig } from "@/services/queries/app/get-config";
-import { useRouter } from "next/router";
+import { Paginate } from '@/components/panel/paginate'
+import { Button, Input } from '@nextui-org/react'
+import { ConfRow } from './conf-row'
+import { useQuery } from '@tanstack/react-query'
+import { getConfig } from '@/services/queries/app/get-config'
+import { useRouter } from 'next/router'
 
 export function Page() {
-  const router = useRouter();
+  const router = useRouter()
 
   const { data: appSettings } = useQuery({
-    queryKey: ["app-settings", router.query],
+    queryKey: ['app-settings', router.query],
     queryFn: () => getConfig({ query: router.query }),
-  });
+  })
 
   return (
     <div className="flex h-full w-[80%] flex-col items-center justify-between gap-4 rounded-md border bg-content1 p-6 shadow-sm shadow-black/40">
@@ -41,7 +41,7 @@ export function Page() {
         <tbody className="text-sm">
           {appSettings ? (
             appSettings.data.map((conf) => {
-              return <ConfRow key={conf.id} conf={conf} />;
+              return <ConfRow key={conf.id} conf={conf} />
             })
           ) : (
             <></>
@@ -50,5 +50,5 @@ export function Page() {
       </table>
       <Paginate />
     </div>
-  );
+  )
 }

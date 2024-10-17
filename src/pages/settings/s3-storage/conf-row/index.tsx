@@ -1,94 +1,94 @@
-import { FetchError } from "@/services/app";
-import { updateS3Config } from "@/services/queries/s3-config/update-config";
-import { queryClient } from "@/services/queryClient";
-import { Button, Input } from "@nextui-org/react";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { useCallback, useState } from "react";
-import { FaEdit } from "react-icons/fa";
-import { IoIosSave } from "react-icons/io";
-import { IoCloseCircleOutline, IoSettings } from "react-icons/io5";
-import { MdOutlineDescription } from "react-icons/md";
-import { toast } from "sonner";
+import { FetchError } from '@/services/app'
+import { updateS3Config } from '@/services/queries/s3-config/update-config'
+import { queryClient } from '@/services/queryClient'
+import { Button, Input } from '@nextui-org/react'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { useCallback, useState } from 'react'
+import { FaEdit } from 'react-icons/fa'
+import { IoIosSave } from 'react-icons/io'
+import { IoCloseCircleOutline, IoSettings } from 'react-icons/io5'
+import { MdOutlineDescription } from 'react-icons/md'
+import { toast } from 'sonner'
 
 interface ConfigProps {
-  id: string;
-  value: string;
-  name: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
+  id: string
+  value: string
+  name: string
+  description: string
+  created_at: string
+  updated_at: string
 }
 
 interface ConfEditProps {
-  conf: ConfigProps;
+  conf: ConfigProps
 }
 export function ConfRow({ conf }: ConfEditProps) {
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(false)
 
-  const [config, setConfig] = useState<ConfigProps>(conf);
+  const [config, setConfig] = useState<ConfigProps>(conf)
 
   const handlerUpdate = useCallback(
     async function () {
       try {
         if (!config.description) {
-          throw new Error("A descrição é obrigatória.");
+          throw new Error('A descrição é obrigatória.')
         }
 
         if (!config.value) {
-          throw new Error("O valor é obrigatório.");
+          throw new Error('O valor é obrigatório.')
         }
 
-        const response = await updateS3Config({ config, config_id: config.id });
+        const response = await updateS3Config({ config, config_id: config.id })
 
         if (response && response.status) {
-          toast.success(response.message);
+          toast.success(response.message)
           const cachedData = queryClient.getQueriesData<
             ApiResponse<AppS3Config[]>
           >({
-            queryKey: ["app-s3-settings"],
-          });
+            queryKey: ['app-s3-settings'],
+          })
 
           cachedData.forEach(([cacheKey, cacheData]) => {
             if (!cacheData) {
-              return null;
+              return null
             }
 
             queryClient.setQueryData<ApiResponse<AppS3Config[]>>(cacheKey, {
               ...cacheData,
               data: cacheData.data.map((d) => {
                 if (d.id === config.id) {
-                  d = config;
+                  d = config
                 }
-                return d;
+                return d
               }),
-            });
-          });
+            })
+          })
 
-          setEdit(false);
+          setEdit(false)
 
-          return;
+          return
         }
 
-        throw new Error("Houve um erro ao tentar atualizar a configuração.");
+        throw new Error('Houve um erro ao tentar atualizar a configuração.')
       } catch (error) {
         if (error instanceof FetchError) {
-          toast.error(error.message);
-          return;
+          toast.error(error.message)
+          return
         }
 
         if (error instanceof Error) {
-          toast.error(error.message);
-          return;
+          toast.error(error.message)
+          return
         }
 
         toast.error(
-          "Houve um erro desconhecido ao tentar editar a configuração.",
-        );
+          'Houve um erro desconhecido ao tentar editar a configuração.',
+        )
       }
     },
     [setEdit, config],
-  );
+  )
 
   if (edit) {
     return (
@@ -101,9 +101,9 @@ export function ConfRow({ conf }: ConfEditProps) {
               startContent={<IoSettings size={20} color="gray" />}
               onChange={(event) => {
                 setConfig((state) => {
-                  state.value = event.currentTarget.value;
-                  return state;
-                });
+                  state.value = event.currentTarget.value
+                  return state
+                })
               }}
             />
           }
@@ -115,9 +115,9 @@ export function ConfRow({ conf }: ConfEditProps) {
               startContent={<MdOutlineDescription size={20} color="gray" />}
               onChange={(event) => {
                 setConfig((state) => {
-                  state.description = event.currentTarget.value;
-                  return state;
-                });
+                  state.description = event.currentTarget.value
+                  return state
+                })
               }}
             />
           }
@@ -155,7 +155,7 @@ export function ConfRow({ conf }: ConfEditProps) {
           </div>
         </td>
       </tr>
-    );
+    )
   }
 
   return (
@@ -209,5 +209,5 @@ export function ConfRow({ conf }: ConfEditProps) {
         </div>
       </td>
     </tr>
-  );
+  )
 }

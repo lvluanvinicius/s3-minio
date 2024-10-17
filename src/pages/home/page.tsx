@@ -1,6 +1,6 @@
-import { DisplayCounts } from "@/components/panel/display-counts";
-import { Logs } from "./logs";
-import { UseLayout } from "../_layouts/use-layout";
+import { DisplayCounts } from '@/components/panel/display-counts'
+import { Logs } from './logs'
+import { UseLayout } from '../_layouts/use-layout'
 
 export function Page() {
   return (
@@ -10,5 +10,5 @@ export function Page() {
         <Logs />
       </div>
     </UseLayout>
-  );
+  )
 }

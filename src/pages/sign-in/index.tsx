@@ -1,30 +1,30 @@
-import Image from "next/image";
-import { Button, Input, Spinner } from "@nextui-org/react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useCallback } from "react";
-import { FetchError, post } from "@/services/app";
-import { toast } from "sonner";
-import { useRouter } from "next/router";
-import { getAppConfig } from "@/services/queries/app/app-config";
-import { useQuery } from "@tanstack/react-query";
-import { SkeletonSignIn } from "./skeleton";
+import Image from 'next/image'
+import { Button, Input, Spinner } from '@nextui-org/react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { useCallback } from 'react'
+import { FetchError, post } from '@/services/app'
+import { toast } from 'sonner'
+import { useRouter } from 'next/router'
+import { getAppConfig } from '@/services/queries/app/app-config'
+import { useQuery } from '@tanstack/react-query'
+import { SkeletonSignIn } from './skeleton'
 
 const signInSchema = z.object({
-  username: z.string().min(1, "Informe o nome de usuário."),
-  password: z.string().min(1, "Informe a senha."),
-});
+  username: z.string().min(1, 'Informe o nome de usuário.'),
+  password: z.string().min(1, 'Informe a senha.'),
+})
 
-type SignInType = z.infer<typeof signInSchema>;
+type SignInType = z.infer<typeof signInSchema>
 
 export function SignIn() {
-  const router = useRouter();
+  const router = useRouter()
 
   const { data: config } = useQuery({
-    queryKey: ["app-header-settings"],
+    queryKey: ['app-header-settings'],
     queryFn: getAppConfig,
-  });
+  })
 
   const {
     handleSubmit,
@@ -32,43 +32,43 @@ export function SignIn() {
     formState: { errors, isSubmitting },
   } = useForm<SignInType>({
     resolver: zodResolver(signInSchema),
-  });
+  })
 
   const handleSignIn = useCallback(
     async function ({ password, username }: SignInType) {
       try {
         const response = await post(
-          "/api/auth/sign-in",
+          '/api/auth/sign-in',
           { password, username },
           {
             headers: {
-              Accept: "application/json",
+              Accept: 'application/json',
             },
           },
-        );
+        )
 
         if (response.status) {
-          return router.push("/home");
+          return router.push('/home')
         }
 
-        throw new Error(response.message);
+        throw new Error(response.message)
       } catch (error) {
         if (error instanceof FetchError) {
-          return toast.error(error.message);
+          return toast.error(error.message)
         }
 
         if (error instanceof Error) {
-          return toast.error(error.message);
+          return toast.error(error.message)
         }
 
-        return toast.error("Houve um erro desconhecido.");
+        return toast.error('Houve um erro desconhecido.')
       }
     },
     [router],
-  );
+  )
 
   if (!config) {
-    return <SkeletonSignIn />;
+    return <SkeletonSignIn />
   }
 
   return (
@@ -94,7 +94,7 @@ export function SignIn() {
       >
         <Input
           variant="bordered"
-          color={errors.username ? "danger" : "secondary"}
+          color={errors.username ? 'danger' : 'secondary'}
           label="Usuário"
           labelPlacement="inside"
           fullWidth
@@ -102,11 +102,11 @@ export function SignIn() {
           type="text"
           radius="md"
           placeholder="Entre com seu usuário"
-          {...register("username")}
+          {...register('username')}
         />
         <Input
           variant="bordered"
-          color={errors.password ? "danger" : "secondary"}
+          color={errors.password ? 'danger' : 'secondary'}
           label="Senha"
           labelPlacement="inside"
           fullWidth
@@ -114,7 +114,7 @@ export function SignIn() {
           type="password"
           radius="md"
           placeholder="Entre com sua senha"
-          {...register("password")}
+          {...register('password')}
         />
 
         <Button
@@ -130,7 +130,7 @@ export function SignIn() {
               <span>Aguarde...</span>
             </>
           ) : (
-            "Entrar"
+            'Entrar'
           )}
         </Button>
       </form>
@@ -142,5 +142,5 @@ export function SignIn() {
         </a>
       </div>
     </div>
-  );
+  )
 }

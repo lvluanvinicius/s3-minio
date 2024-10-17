@@ -1,38 +1,39 @@
-import { formatBytes } from "@/utils/formatter";
+import { formatBytes } from '@/utils/formatter'
 
-import { Paginate } from "@/components/panel/paginate";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { DisplayCounts } from "@/components/panel/display-counts";
-import { UseLayout } from "../_layouts/use-layout";
-import { FolderEdit } from "./folder-edit";
-import { FileDelete } from "./file-delete";
-import { Search } from "@/components/panel/search";
-import { Helmet } from "react-helmet-async";
-import { useQuery } from "@tanstack/react-query";
-import { getFilesFolders } from "@/services/queries/files/get-files-folders";
-import { useRouter } from "next/router";
-import { TableSkeleton } from "./skeleton";
-import { FaFolder } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { FileDownload } from "./files-download";
+import { Paginate } from '@/components/panel/paginate'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { DisplayCounts } from '@/components/panel/display-counts'
+import { UseLayout } from '../_layouts/use-layout'
+import { FolderEdit } from './folder-edit'
+import { FileDelete } from './file-delete'
+import { Search } from '@/components/panel/search'
+import { Helmet } from 'react-helmet-async'
+import { useQuery } from '@tanstack/react-query'
+import { getFilesFolders } from '@/services/queries/files/get-files-folders'
+import { useRouter } from 'next/router'
+import { TableSkeleton } from './skeleton'
+import { FaFolder } from 'react-icons/fa'
+import { useEffect, useState } from 'react'
+import { FileDownload } from './files-download'
+import { ShowItemName } from './show-item-name'
 
 export function Page() {
-  const router = useRouter();
+  const router = useRouter()
 
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(false)
 
   const { data: filesFolders } = useQuery({
-    queryKey: ["files-folders", router.query],
+    queryKey: ['files-folders', router.query],
     queryFn: () => getFilesFolders({ query: router.query }),
-  });
+  })
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    setIsClient(true)
+  }, [])
 
   if (!isClient) {
-    return null;
+    return null
   }
 
   return (
@@ -75,16 +76,16 @@ export function Page() {
 
             {filesFolders ? (
               filesFolders.data.result.map((item) => {
-                const size = item.item_size ? item.item_size : 0;
+                const size = item.item_size ? item.item_size : 0
 
-                if (item.item_type === "file") {
+                if (item.item_type === 'file') {
                   return (
                     <tr
                       key={item.item_id}
                       className="text-sm hover:bg-secondary/10"
                     >
-                      <td className="whitespace-nowrap py-2 pl-2">
-                        {item.item_name}
+                      <td className="swhitespace-nowrap flex items-center py-2 pl-2">
+                        <ShowItemName description={item.item_name} />
                       </td>
                       <td className="whitespace-nowrap py-2">
                         {formatBytes(size, 2)}
@@ -105,12 +106,25 @@ export function Page() {
                         </div>
                       </td>
                     </tr>
-                  );
+                  )
                 }
 
-                if (item.item_type === "folder") {
-                  return <FolderEdit key={item.item_id} item={item} />;
+                if (item.item_type === 'folder') {
+                  return <FolderEdit key={item.item_id} item={item} />
                 }
+
+                return (
+                  <tr
+                    key={item.item_id}
+                    className="text-sm hover:bg-secondary/10"
+                  >
+                    <td className="whitespace-nowrap py-2 pl-2"></td>
+                    <td className="whitespace-nowrap py-2"></td>
+                    <td className="whitespace-nowrap py-2"></td>
+                    <td className="whitespace-nowrap py-2"></td>
+                    <td className="w-min-[5rem] whitespace-nowrap py-2"></td>
+                  </tr>
+                )
               })
             ) : (
               <TableSkeleton />
@@ -121,5 +135,5 @@ export function Page() {
         <Paginate />
       </div>
     </UseLayout>
-  );
+  )
 }

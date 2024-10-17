@@ -1,4 +1,4 @@
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt } from 'react-icons/fa'
 import {
   Modal,
   ModalContent,
@@ -8,70 +8,70 @@ import {
   Button,
   useDisclosure,
   Spinner,
-} from "@nextui-org/react";
-import { useCallback, useState } from "react";
-import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
-import { FetchError } from "@/services/app";
-import { queryClient } from "@/services/queryClient";
-import { deleteUser } from "@/services/queries/users/delete-user";
+} from '@nextui-org/react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
+import { useMutation } from '@tanstack/react-query'
+import { FetchError } from '@/services/app'
+import { queryClient } from '@/services/queryClient'
+import { deleteUser } from '@/services/queries/users/delete-user'
 
 export function UserDelete({ user_id }: { user_id: string }) {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isDelete, setIsDelete] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const [isDelete, setIsDelete] = useState(false)
 
   const { mutateAsync: deleteUserFunc } = useMutation({
     mutationFn: () => deleteUser({ user_id }),
-  });
+  })
 
   const handleDelete = useCallback(async () => {
     try {
-      setIsDelete(true);
-      const del = await deleteUserFunc();
+      setIsDelete(true)
+      const del = await deleteUserFunc()
 
       if (del.status) {
         const cachedUsers = queryClient.getQueriesData<
           ApiResponse<UserInterface[]>
         >({
-          queryKey: ["users"],
-        });
+          queryKey: ['users'],
+        })
 
         cachedUsers.forEach(([cacheKey, cacheData]) => {
           if (!cacheData) {
-            return null;
+            return null
           }
 
           queryClient.setQueryData<ApiResponse<UserInterface[]>>(cacheKey, {
             ...cacheData,
             data: cacheData.data.filter((d) => d.id !== user_id),
-          });
-        });
+          })
+        })
 
-        toast.success(del.message);
-        setIsDelete(false);
-        onClose();
-        return;
+        toast.success(del.message)
+        setIsDelete(false)
+        onClose()
+        return
       }
 
-      setIsDelete(false);
+      setIsDelete(false)
 
-      throw new Error(del.message);
+      throw new Error(del.message)
     } catch (error) {
-      setIsDelete(false);
+      setIsDelete(false)
 
       if (error instanceof FetchError) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
       if (error instanceof Error) {
-        toast.error(error.message);
-        return;
+        toast.error(error.message)
+        return
       }
 
-      toast.error("Houve um erro desconhecido ao tentar excluír o arquivo.");
+      toast.error('Houve um erro desconhecido ao tentar excluír o arquivo.')
     }
-  }, [user_id]);
+  }, [user_id, deleteUserFunc, onClose])
 
   return (
     <>
@@ -99,12 +99,12 @@ export function UserDelete({ user_id }: { user_id: string }) {
                   Aguarde...
                 </>
               ) : (
-                "Confirmar"
+                'Confirmar'
               )}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }

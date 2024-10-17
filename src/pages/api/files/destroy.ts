@@ -1,17 +1,17 @@
-import { destroyObject } from "@/actions/minio";
-import { apiHandlerErros } from "@/exceptions/api_handler_erros";
-import { errorInvalidContentBody } from "@/exceptions/invalid_content_body";
-import { prisma } from "@/libs/prisma";
-import { NextApiRequest, NextApiResponse } from "next";
+import { destroyObject } from '@/actions/minio'
+import { apiHandlerErros } from '@/exceptions/api_handler_erros'
+import { errorInvalidContentBody } from '@/exceptions/invalid_content_body'
+import { prisma } from '@/libs/prisma'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 export async function destroy(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { file_id } = req.query;
+    const { file_id } = req.query
 
     // Efetua a validação dos parametros do params.
     errorInvalidContentBody({ file_id }, [
-      "file_id|Parâmetro file_id é obrigatório.",
-    ]);
+      'file_id|Parâmetro file_id é obrigatório.',
+    ])
 
     // Recuperando arquivo.
     const existsFile = await prisma.files.findUnique({
@@ -26,10 +26,10 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
           select: { bucket_name: true },
         },
       },
-    });
+    })
 
     if (!existsFile) {
-      throw new Error(`Arquivo não encontrado.`);
+      throw new Error(`Arquivo não encontrado.`)
     }
 
     // Remover arquivo dentro do S3.
@@ -37,7 +37,7 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
       await destroyObject({
         bucket_name: existsFile.Buckets.bucket_name,
         file_name: existsFile.file_hash,
-      });
+      })
     }
 
     // Efetuando a exclusão do arquivo.
@@ -45,28 +45,28 @@ export async function destroy(req: NextApiRequest, res: NextApiResponse) {
       where: {
         id: file_id as string,
       },
-    });
+    })
 
     if (!destroyFile) {
-      throw new Error(`Erro ao tentar excluír esse arquivo.`);
+      throw new Error(`Erro ao tentar excluír esse arquivo.`)
     }
 
     return res.status(200).json({
       status: true,
-      message: "Arquivo excluído com sucesso.",
+      message: 'Arquivo excluído com sucesso.',
       data: null,
-    });
+    })
   } catch (error) {
     if (error instanceof Error) {
-      return apiHandlerErros(error, res);
+      return apiHandlerErros(error, res)
     }
 
     return res.status(400).json({
       status: false,
-      message: "Erro desconhecido.",
+      message: 'Erro desconhecido.',
       data: null,
-    });
+    })
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }

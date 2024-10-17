@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
-import { LayoutDefault } from "./default";
+import { ReactNode } from 'react'
+import { LayoutDefault } from './default'
 
 interface LayoutDefaultProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function UseLayout({ children }: LayoutDefaultProps) {
-  return <LayoutDefault>{children}</LayoutDefault>;
+  return <LayoutDefault>{children}</LayoutDefault>
 }

@@ -1,4 +1,4 @@
-import { NextApiRequest } from "next";
+import { NextApiResponse } from "next";
 
 declare module "next" {
   export interface NextApiRequest {

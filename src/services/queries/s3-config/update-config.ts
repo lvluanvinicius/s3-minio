@@ -1,9 +1,9 @@
-import { put } from "@/services/app";
-import { toast } from "sonner";
+import { put } from '@/services/app'
+import { toast } from 'sonner'
 
 interface UpdateS3Config {
-  config: AppS3Config;
-  config_id: string;
+  config: AppS3Config
+  config_id: string
 }
 
 export async function updateS3Config({ config, config_id }: UpdateS3Config) {
@@ -16,14 +16,14 @@ export async function updateS3Config({ config, config_id }: UpdateS3Config) {
     },
     {
       headers: {
-        Accept: "application/json",
+        Accept: 'application/json',
       },
     },
-  );
+  )
 
   if (update.status) {
-    return update;
+    return update
   }
 
-  toast.error(update.message);
+  toast.error(update.message)
 }

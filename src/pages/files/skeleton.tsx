@@ -1,4 +1,4 @@
-import { Skeleton } from "@nextui-org/react";
+import { Skeleton } from '@nextui-org/react'
 
 export function TableSkeleton() {
   return (
@@ -22,8 +22,8 @@ export function TableSkeleton() {
               <Skeleton className="w-min-[10rem] mx-2 h-8 rounded-md bg-secondary/10" />
             </td>
           </tr>
-        );
+        )
       })}
     </>
-  );
+  )
 }

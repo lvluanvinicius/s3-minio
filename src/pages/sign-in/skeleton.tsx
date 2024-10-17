@@ -1,4 +1,4 @@
-import { Skeleton } from "@nextui-org/react";
+import { Skeleton } from '@nextui-org/react'
 
 export function SkeletonSignIn() {
   return (
@@ -28,5 +28,5 @@ export function SkeletonSignIn() {
         </a>
       </div>
     </div>
-  );
+  )
 }
