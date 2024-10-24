@@ -30,7 +30,7 @@ export function Page() {
         meta: { bucket_id: appConfig.data.app_bucket_id },
       });
 
-      // Configure o plugin XHRUpload
+      // Configure o plugin XHRUpload ->
       if (!uppy.getPlugin("XHRUpload")) {
         uppy.use(XHRUpload, {
           endpoint: `/api/files/upload?bucket_id=${appConfig.data.app_bucket_id}`,
@@ -42,9 +42,7 @@ export function Page() {
             Accept: "application/json",
           },
         });
-      }
 
-      if (uppy) {
         setUppyInstance(uppy);
       }
 
